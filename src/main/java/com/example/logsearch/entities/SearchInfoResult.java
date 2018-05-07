@@ -8,8 +8,6 @@
 
 package com.example.logsearch.entities;
 
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;

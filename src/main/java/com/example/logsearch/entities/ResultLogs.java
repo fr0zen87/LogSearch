@@ -8,13 +8,12 @@
 
 package com.example.logsearch.entities;
 
-import org.springframework.stereotype.Component;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 
 
@@ -48,7 +47,7 @@ import java.time.LocalDateTime;
 public class ResultLogs {
 
     @XmlElement(required = true)
-    @XmlSchemaType(name = "dateTime")
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     protected LocalDateTime timeMoment;
     @XmlElement(required = true)
     protected String fileName;
