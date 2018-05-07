@@ -24,17 +24,17 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     }
 
     @Bean(name = "logSearch")
-    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema countriesSchema) {
+    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema searchSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("SearchPort");
         wsdl11Definition.setLocationUri("/ws");
         wsdl11Definition.setTargetNamespace("http://entities.logsearch.example.com");
-        wsdl11Definition.setSchema(countriesSchema);
+        wsdl11Definition.setSchema(searchSchema);
         return wsdl11Definition;
     }
 
     @Bean
-    public XsdSchema countriesSchema() {
+    public XsdSchema searchSchema() {
         return new SimpleXsdSchema(new ClassPathResource("SoapLogService.xsd"));
     }
 }

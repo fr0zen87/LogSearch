@@ -1,5 +1,6 @@
 package com.example.logsearch.entities;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -16,12 +18,22 @@ public class Search {
 
     private ResultLogs resultLogs;
     private SearchInfoResult searchInfoResult;
+    private final SearchInfoValidator validator;
+
+    @Autowired
+    public Search(SearchInfoValidator validator) {
+        this.validator = validator;
+    }
 
     public SearchInfoResult logSearch(SearchInfo searchInfo) {
         List<SignificantDateInterval> dateInterval = searchInfo.getDateInterval();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
         searchInfoResult = new SearchInfoResult();
+        validator.validate(searchInfo, searchInfoResult);
+        if (searchInfoResult.getErrorCode() != null) {
+            return searchInfoResult;
+        }
 
         Path logFilePath = Paths.get(searchInfo.getLocation());
         FileSystem fs = FileSystems.getDefault();
@@ -32,7 +44,7 @@ public class Search {
             public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
                 Path name = file.getFileName();
 
-                if(name.endsWith("access.log")){
+                if (name.endsWith("access.log")) {
                     return FileVisitResult.CONTINUE;
                 }
                 if (matcher.matches(name)) {
@@ -44,7 +56,7 @@ public class Search {
                                     LocalDateTime parsedDate = LocalDateTime.parse(elem.substring(5, 24), formatter);
                                     resultLogs = new ResultLogs();
 
-                                    for(SignificantDateInterval interval: dateInterval) {
+                                    for (SignificantDateInterval interval : dateInterval) {
                                         if ((parsedDate.isAfter(interval.getDateFrom())
                                                 || parsedDate.isEqual(interval.getDateFrom()))
                                                 && parsedDate.isBefore(interval.getDateTo())
@@ -56,13 +68,14 @@ public class Search {
                                             resultLogs.setFileName(file.toString());
                                         }
                                     }
-                                    return resultLogs;})
+                                    return resultLogs;
+                                })
                                 .filter(log -> log.fileName != null)
+                                .sorted(Comparator.comparing(ResultLogs::getTimeMoment))
                                 .collect(Collectors.toList());
-                        if(resultLogsArray == null || resultLogsArray.isEmpty()){
+                        if (resultLogsArray == null || resultLogsArray.isEmpty()) {
                             searchInfoResult.setEmptyResultMessage("No logs found");
-                        }
-                        else{
+                        } else {
                             searchInfoResult.setResultLogs(resultLogsArray);
                         }
                     } catch (IOException e) {
