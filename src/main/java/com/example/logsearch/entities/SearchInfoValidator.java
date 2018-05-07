@@ -2,6 +2,9 @@ package com.example.logsearch.entities;
 
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
@@ -10,9 +13,8 @@ import java.util.regex.Pattern;
 public class SearchInfoValidator {
 
     public void validate(SearchInfo searchInfo, SearchInfoResult searchInfoResult) {
-        try {
-            Pattern.compile(searchInfo.getRegularExpression()).asPredicate();
-        } catch (Exception e) {
+        Path path = Paths.get(System.getProperty("user.dir") + "\\" + searchInfo.getLocation());
+        if (!Files.exists(path)) {
             searchInfoResult.setErrorCode(44L);
             searchInfoResult.setErrorMessage("Incorrect resource name");
             return;
@@ -44,6 +46,13 @@ public class SearchInfoValidator {
                 searchInfoResult.setErrorMessage("DateFrom exceeds DateTo");
                 return;
             }
+        }
+        try {
+            Pattern.compile(searchInfo.getRegularExpression());
+        } catch (Exception e) {
+            searchInfoResult.setErrorCode(666L);
+            searchInfoResult.setErrorMessage("Incorrect regexp");
+            return;
         }
     }
 }
