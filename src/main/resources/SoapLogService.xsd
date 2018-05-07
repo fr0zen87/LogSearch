@@ -1,0 +1,45 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://entitiess.logsearch.example.com"
+           targetNamespace="http://entitiess.logsearch.example.com"
+           elementFormDefault="qualified">
+
+    <xs:element name="SearchInfo" type="tns:SearchInfo"/>
+
+    <xs:element name="ResultLogs" type="tns:ResultLogs"/>
+
+    <xs:complexType name="SearchInfo">
+        <xs:sequence>
+            <xs:element name="regularExpression" type="xs:string"/>
+            <xs:element name="dateInterval" type="tns:SignificantDateInterval"
+                        minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="location" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SignificantDateInterval">
+        <xs:sequence>
+            <xs:element name="dateFrom" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="dateTo" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="SearchInfoResult">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="emptyResultMessage" type="xs:string" minOccurs="0"/>
+                <xs:element name="errorCode" type="xs:long" minOccurs="0"/>
+                <xs:element name="errorMessage" type="xs:string" minOccurs="0"/>
+                <xs:element name="resultLogs" type="tns:ResultLogs"
+                            minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="ResultLogs">
+        <xs:sequence>
+            <xs:element name="timeMoment" type="xs:dateTime"/>
+            <xs:element name="fileName" type="xs:string"/>
+            <xs:element name="content" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
