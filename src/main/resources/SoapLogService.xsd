@@ -1,6 +1,6 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:tns="http://entitiess.logsearch.example.com"
-           targetNamespace="http://entitiess.logsearch.example.com"
+           xmlns:tns="http://entities.logsearch.example.com"
+           targetNamespace="http://entities.logsearch.example.com"
            elementFormDefault="qualified">
 
     <xs:element name="SearchInfo" type="tns:SearchInfo"/>
@@ -13,6 +13,8 @@
             <xs:element name="dateInterval" type="tns:SignificantDateInterval"
                         minOccurs="1" maxOccurs="unbounded"/>
             <xs:element name="location" type="xs:string" minOccurs="0"/>
+            <xs:element name="realization" type="xs:boolean"/>
+            <xs:element name="fileExtension" type="tns:FileExtension" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -42,4 +44,15 @@
             <xs:element name="content" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
+
+    <xs:simpleType name="FileExtension">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PDF"/>
+            <xs:enumeration value="RTF"/>
+            <xs:enumeration value="HTML"/>
+            <xs:enumeration value="XML"/>
+            <xs:enumeration value="LOG"/>
+            <xs:enumeration value="DOC"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

@@ -76,7 +76,7 @@ public class Search {
                         if (resultLogsArray == null || resultLogsArray.isEmpty()) {
                             searchInfoResult.setEmptyResultMessage("No logs found");
                         } else {
-                            searchInfoResult.setResultLogs(resultLogsArray);
+                            searchInfoResult.resultLogs = resultLogsArray;
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
