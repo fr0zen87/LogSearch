@@ -57,7 +57,6 @@ public class SearchInfoValidator {
         } catch (Exception e) {
             searchInfoResult.setErrorCode(666L);
             searchInfoResult.setErrorMessage("Incorrect regexp");
-            return;
         }
     }
 }

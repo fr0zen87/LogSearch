@@ -9,7 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -45,24 +47,36 @@ public class Search {
             logFilePath = defaultPath;
         }
 
-        FileSystem fs = FileSystems.getDefault();
-        PathMatcher matcher = fs.getPathMatcher("glob:*.log");
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*.log*");
+        Pattern accessLogPattern = Pattern.compile("access.log*");
 
         FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
                 Path name = file.getFileName();
 
-                if (name.endsWith("access.log")) {
+                if (accessLogPattern.matcher(name.toString()).find()) {
                     return FileVisitResult.CONTINUE;
                 }
-                if (matcher.matches(name)) {
+
+                if (matcher.matches(name) && checkFileCreationTime(attr, dateInterval)) {
                     try {
-                        List<ResultLogs> resultLogsArray = Files.lines(file, StandardCharsets.ISO_8859_1)
-                                .filter(line -> line.startsWith("####"))
+                        StringBuilder sb = new StringBuilder();
+                        List<String> fileLines = new ArrayList<>();
+                        for (String line : Files.readAllLines(file, StandardCharsets.ISO_8859_1)) {
+                            if (!line.trim().endsWith(">")) {
+                                sb = sb.length() == 0 ? sb.append(line) : sb.append(", ").append(line);
+                            } else {
+                                sb.append(line.trim());
+                                fileLines.add(sb.toString());
+                                sb = new StringBuilder();
+                            }
+                        }
+                        List<ResultLogs> resultLogsArray = fileLines.stream()
+                                .parallel()
                                 .filter(Pattern.compile(searchInfo.getRegularExpression()).asPredicate())
-                                .map(elem -> {
-                                    LocalDateTime parsedDate = LocalDateTime.parse(elem.substring(5, 24), formatter);
+                                .map(line -> {
+                                    LocalDateTime parsedDate = LocalDateTime.parse(line.substring(5, 24), formatter);
                                     resultLogs = new ResultLogs();
 
                                     for (SignificantDateInterval interval : dateInterval) {
@@ -70,7 +84,7 @@ public class Search {
                                                 || parsedDate.isEqual(interval.getDateFrom()))
                                                 && parsedDate.isBefore(interval.getDateTo())
                                                 ) {
-                                            String content = elem.substring(34);
+                                            String content = line.substring(34);
 
                                             resultLogs.setTimeMoment(parsedDate);
                                             resultLogs.setContent(content);
@@ -82,10 +96,8 @@ public class Search {
                                 .filter(log -> log.fileName != null)
                                 .sorted(Comparator.comparing(ResultLogs::getTimeMoment))
                                 .collect(Collectors.toList());
-                        if (resultLogsArray != null && !resultLogsArray.isEmpty()) {
-                            searchInfoResult.resultLogs.addAll(resultLogsArray);
-                        } else {
-                            searchInfoResult.resultLogs = resultLogsArray;
+                        if (!resultLogsArray.isEmpty()) {
+                            searchInfoResult.getResultLogs().addAll(resultLogsArray);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -103,5 +115,21 @@ public class Search {
             searchInfoResult.setEmptyResultMessage("No logs found");
         }
         return searchInfoResult;
+    }
+
+    private boolean checkFileCreationTime(BasicFileAttributes attr, List<SignificantDateInterval> dateInterval) {
+
+        LocalDateTime fileCreationTime = LocalDateTime
+                .ofInstant(attr.creationTime().toInstant(), ZoneId.systemDefault());
+        LocalDateTime fileModificationTime = LocalDateTime
+                .ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
+
+        for (SignificantDateInterval interval : dateInterval) {
+            if (fileCreationTime.isBefore(interval.getDateTo())
+                    && fileModificationTime.isAfter(interval.getDateFrom())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
