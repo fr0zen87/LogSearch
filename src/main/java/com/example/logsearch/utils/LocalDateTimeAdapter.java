@@ -1,4 +1,4 @@
-package com.example.logsearch.entities;
+package com.example.logsearch.utils;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.example.logsearch.Service;
+package com.example.logsearch.service;
 
 import com.example.logsearch.entities.Search;
 import com.example.logsearch.entities.SearchInfo;

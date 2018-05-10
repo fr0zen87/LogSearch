@@ -1,5 +1,8 @@
-package com.example.logsearch.entities;
+package com.example.logsearch.utils;
 
+import com.example.logsearch.entities.SearchInfo;
+import com.example.logsearch.entities.SearchInfoResult;
+import com.example.logsearch.entities.SignificantDateInterval;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
@@ -13,7 +16,9 @@ import java.util.regex.Pattern;
 public class SearchInfoValidator {
 
     public void validate(SearchInfo searchInfo, SearchInfoResult searchInfoResult) {
-        Path path = Paths.get(System.getProperty("user.dir") + "\\" + searchInfo.getLocation());
+
+        Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
+        Path path = Paths.get(defaultPath.toString(), searchInfo.getLocation());
         if (!Files.exists(path)) {
             searchInfoResult.setErrorCode(44L);
             searchInfoResult.setErrorMessage("Incorrect resource name");

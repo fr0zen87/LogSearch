@@ -1,7 +1,7 @@
 package com.example.logsearch.controller;
 
-import com.example.logsearch.Service.LogService;
-import com.example.logsearch.Service.RestLogServiceImpl;
+import com.example.logsearch.service.LogService;
+import com.example.logsearch.service.RestLogServiceImpl;
 import com.example.logsearch.entities.SearchInfo;
 import com.example.logsearch.entities.SearchInfoResult;
 import org.springframework.beans.factory.annotation.Autowired;

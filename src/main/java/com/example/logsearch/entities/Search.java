@@ -1,9 +1,11 @@
 package com.example.logsearch.entities;
 
+import com.example.logsearch.utils.SearchInfoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
@@ -35,7 +37,14 @@ public class Search {
             return searchInfoResult;
         }
 
-        Path logFilePath = Paths.get(searchInfo.getLocation());
+        Path logFilePath;
+        Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
+        if (searchInfo.getLocation() != null) {
+            logFilePath = Paths.get(defaultPath.toString(), searchInfo.getLocation());
+        } else {
+            logFilePath = defaultPath;
+        }
+
         FileSystem fs = FileSystems.getDefault();
         PathMatcher matcher = fs.getPathMatcher("glob:*.log");
 
@@ -49,7 +58,7 @@ public class Search {
                 }
                 if (matcher.matches(name)) {
                     try {
-                        List<ResultLogs> resultLogsArray = Files.lines(file)
+                        List<ResultLogs> resultLogsArray = Files.lines(file, StandardCharsets.ISO_8859_1)
                                 .filter(line -> line.startsWith("####"))
                                 .filter(Pattern.compile(searchInfo.getRegularExpression()).asPredicate())
                                 .map(elem -> {
@@ -61,7 +70,7 @@ public class Search {
                                                 || parsedDate.isEqual(interval.getDateFrom()))
                                                 && parsedDate.isBefore(interval.getDateTo())
                                                 ) {
-                                            String content = elem.substring(33);
+                                            String content = elem.substring(34);
 
                                             resultLogs.setTimeMoment(parsedDate);
                                             resultLogs.setContent(content);
@@ -73,8 +82,8 @@ public class Search {
                                 .filter(log -> log.fileName != null)
                                 .sorted(Comparator.comparing(ResultLogs::getTimeMoment))
                                 .collect(Collectors.toList());
-                        if (resultLogsArray == null || resultLogsArray.isEmpty()) {
-                            searchInfoResult.setEmptyResultMessage("No logs found");
+                        if (resultLogsArray != null && !resultLogsArray.isEmpty()) {
+                            searchInfoResult.resultLogs.addAll(resultLogsArray);
                         } else {
                             searchInfoResult.resultLogs = resultLogsArray;
                         }
@@ -89,6 +98,9 @@ public class Search {
             Files.walkFileTree(logFilePath, matcherVisitor);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        if (searchInfoResult.getResultLogs().isEmpty()) {
+            searchInfoResult.setEmptyResultMessage("No logs found");
         }
         return searchInfoResult;
     }
