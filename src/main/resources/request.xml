@@ -1,14 +1,16 @@
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-                  xmlns:gs="http://entities.logsearch.example.com">
+                  xmlns:ls="http://entities.logsearch.example.com">
     <soapenv:Header/>
     <soapenv:Body>
-        <gs:SearchInfo>
-            <gs:regularExpression>""</gs:regularExpression>
-            <gs:dateInterval>
-                <gs:dateFrom>2018-01-09T10:15:30</gs:dateFrom>
-                <gs:dateTo>2018-02-09T10:15:30</gs:dateTo>
-            </gs:dateInterval>
-            <gs:location>target</gs:location>
-        </gs:SearchInfo>
+        <ls:searchInfo>
+            <ls:regularExpression></ls:regularExpression>
+            <ls:dateIntervals>
+                <ls:dateFrom>2018-01-09T10:15:30</ls:dateFrom>
+                <ls:dateTo>2018-08-06T10:15:30</ls:dateTo>
+            </ls:dateIntervals>
+            <ls:location>IdeaProjects</ls:location>
+            <ls:realization>false</ls:realization>
+            <ls:fileExtension>LOG</ls:fileExtension>
+        </ls:searchInfo>
     </soapenv:Body>
 </soapenv:Envelope>

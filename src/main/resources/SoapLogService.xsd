@@ -7,10 +7,19 @@
 
     <xs:element name="ResultLogs" type="tns:ResultLogs"/>
 
+    <xs:element name="logs" type="tns:Logs"/>
+
+    <xs:complexType name="Logs">
+        <xs:sequence>
+            <xs:element name="searchInfo" type="tns:SearchInfo" minOccurs="0"/>
+            <xs:element name="searchInfoResult" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
     <xs:complexType name="SearchInfo">
         <xs:sequence>
             <xs:element name="regularExpression" type="xs:string"/>
-            <xs:element name="dateInterval" type="tns:SignificantDateInterval"
+            <xs:element name="dateIntervals" type="tns:SignificantDateInterval"
                         minOccurs="1" maxOccurs="unbounded"/>
             <xs:element name="location" type="xs:string" minOccurs="0"/>
             <xs:element name="realization" type="xs:boolean"/>

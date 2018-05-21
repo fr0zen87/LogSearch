@@ -7,17 +7,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RestLogServiceImpl implements LogService {
+public class LogServiceImpl implements LogService {
 
     private final Search search;
 
     @Autowired
-    public RestLogServiceImpl(Search search) {
+    public LogServiceImpl(Search search) {
         this.search = search;
     }
 
     @Override
     public SearchInfoResult logSearch(SearchInfo searchInfo) {
+        if (searchInfo.isRealization()) {
+            if (!fileSearch(searchInfo)) {
+                fileGenerate(searchInfo);
+            }
+            return null;
+        }
         return search.logSearch(searchInfo);
+    }
+
+    @Override
+    public boolean fileSearch(SearchInfo searchInfo) {
+        return search.fileSearch(searchInfo);
+    }
+
+    @Override
+    public void fileGenerate(SearchInfo searchInfo) {
+        search.fileGenerate(searchInfo);
     }
 }

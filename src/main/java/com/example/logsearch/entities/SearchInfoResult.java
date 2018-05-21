@@ -39,13 +39,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
+@XmlType(name = "SearchInfoResult", propOrder = {
     "emptyResultMessage",
     "errorCode",
     "errorMessage",
     "resultLogs"
 })
-@XmlRootElement(name = "SearchInfoResult")
+@XmlRootElement(name = "searchInfoResult")
 public class SearchInfoResult {
 
     protected String emptyResultMessage;

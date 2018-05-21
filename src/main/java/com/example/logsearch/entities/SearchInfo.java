@@ -8,27 +8,24 @@
 
 package com.example.logsearch.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
  * <p>Java class for SearchInfo complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="SearchInfo"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="regularExpression" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;element name="dateInterval" type="{http://entities.logsearch.example.com}SignificantDateInterval" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="dateIntervals" type="{http://entities.logsearch.example.com}SignificantDateInterval" maxOccurs="unbounded"/&gt;
  *         &lt;element name="location" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="realization" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="fileExtension" type="{http://entities.logsearch.example.com}FileExtension" minOccurs="0"/&gt;
@@ -37,23 +34,24 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SearchInfo", propOrder = {
     "regularExpression",
-    "dateInterval",
+    "dateIntervals",
     "location",
     "realization",
     "fileExtension"
 })
-public class SearchInfo {
+@XmlRootElement(name = "searchInfo")
+public class SearchInfo implements Serializable {
 
     @XmlElement(required = true)
     protected String regularExpression;
     @XmlElement(required = true)
-    protected List<SignificantDateInterval> dateInterval;
+    protected List<SignificantDateInterval> dateIntervals;
     protected String location;
     protected boolean realization;
     @XmlSchemaType(name = "string")
@@ -61,11 +59,11 @@ public class SearchInfo {
 
     /**
      * Gets the value of the regularExpression property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getRegularExpression() {
         return regularExpression;
@@ -73,52 +71,52 @@ public class SearchInfo {
 
     /**
      * Sets the value of the regularExpression property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setRegularExpression(String value) {
         this.regularExpression = value;
     }
 
     /**
-     * Gets the value of the dateInterval property.
-     * 
+     * Gets the value of the dateIntervals property.
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the dateInterval property.
-     * 
+     * This is why there is not a <CODE>set</CODE> method for the dateIntervals property.
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getDateInterval().add(newItem);
+     *    getDateIntervals().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link SignificantDateInterval }
-     * 
-     * 
+     *
+     *
      */
-    public List<SignificantDateInterval> getDateInterval() {
-        if (dateInterval == null) {
-            dateInterval = new ArrayList<SignificantDateInterval>();
+    public List<SignificantDateInterval> getDateIntervals() {
+        if (dateIntervals == null) {
+            dateIntervals = new ArrayList<SignificantDateInterval>();
         }
-        return this.dateInterval;
+        return this.dateIntervals;
     }
 
     /**
      * Gets the value of the location property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getLocation() {
         return location;
@@ -126,11 +124,11 @@ public class SearchInfo {
 
     /**
      * Sets the value of the location property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setLocation(String value) {
         this.location = value;
@@ -138,7 +136,7 @@ public class SearchInfo {
 
     /**
      * Gets the value of the realization property.
-     * 
+     *
      */
     public boolean isRealization() {
         return realization;
@@ -146,7 +144,7 @@ public class SearchInfo {
 
     /**
      * Sets the value of the realization property.
-     * 
+     *
      */
     public void setRealization(boolean value) {
         this.realization = value;
@@ -154,11 +152,11 @@ public class SearchInfo {
 
     /**
      * Gets the value of the fileExtension property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link FileExtension }
-     *     
+     *
      */
     public FileExtension getFileExtension() {
         return fileExtension;
@@ -166,11 +164,11 @@ public class SearchInfo {
 
     /**
      * Sets the value of the fileExtension property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link FileExtension }
-     *     
+     *
      */
     public void setFileExtension(FileExtension value) {
         this.fileExtension = value;

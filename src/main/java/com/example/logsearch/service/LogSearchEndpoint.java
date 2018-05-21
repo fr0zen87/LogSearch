@@ -22,9 +22,19 @@ public class LogSearchEndpoint implements LogService {
     }
 
     @Override
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "SearchInfo")
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "searchInfo")
     @ResponsePayload
     public SearchInfoResult logSearch(@RequestPayload SearchInfo searchInfo) {
         return search.logSearch(searchInfo);
+    }
+
+    @Override
+    public boolean fileSearch(SearchInfo searchInfo) {
+        return false;
+    }
+
+    @Override
+    public void fileGenerate(SearchInfo searchInfo) {
+
     }
 }

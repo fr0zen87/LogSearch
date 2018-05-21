@@ -1,13 +1,24 @@
 package com.example.logsearch.entities;
 
+import com.example.logsearch.utils.ConfigProperties;
 import com.example.logsearch.utils.SearchInfoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -20,17 +31,22 @@ import java.util.stream.Collectors;
 @Component
 public class Search {
 
+    private boolean isFileFound;
     private ResultLogs resultLogs;
     private SearchInfoResult searchInfoResult;
+
     private final SearchInfoValidator validator;
+    private final ConfigProperties configProperties;
 
     @Autowired
-    public Search(SearchInfoValidator validator) {
+    public Search(SearchInfoValidator validator, ConfigProperties configProperties) {
         this.validator = validator;
+        this.configProperties = configProperties;
     }
 
     public SearchInfoResult logSearch(SearchInfo searchInfo) {
-        List<SignificantDateInterval> dateInterval = searchInfo.getDateInterval();
+
+        List<SignificantDateInterval> dateInterval = searchInfo.getDateIntervals();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
         searchInfoResult = new SearchInfoResult();
@@ -93,8 +109,7 @@ public class Search {
                                     }
                                     return resultLogs;
                                 })
-                                .filter(log -> log.fileName != null)
-                                .sorted(Comparator.comparing(ResultLogs::getTimeMoment))
+                                .filter(log -> log.getFileName() != null)
                                 .collect(Collectors.toList());
                         if (!resultLogsArray.isEmpty()) {
                             searchInfoResult.getResultLogs().addAll(resultLogsArray);
@@ -113,8 +128,129 @@ public class Search {
         }
         if (searchInfoResult.getResultLogs().isEmpty()) {
             searchInfoResult.setEmptyResultMessage("No logs found");
+        } else {
+            searchInfoResult.getResultLogs().sort(Comparator.comparing(ResultLogs::getTimeMoment));
         }
         return searchInfoResult;
+    }
+
+    public boolean fileSearch(SearchInfo searchInfo) {
+        isFileFound = false;
+        Path path = Paths.get(configProperties.getPath());
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectory(path);
+                return false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+
+                    try {
+                        UserDefinedFileAttributeView view = Files.getFileAttributeView(file, UserDefinedFileAttributeView.class);
+                        if (view == null || !view.list().contains("info")) {
+                            return FileVisitResult.CONTINUE;
+                        }
+                        byte[] bytes = (byte[]) Files.getAttribute(file, "user:info");
+                        ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
+                        SearchInfo fileSearchInfo = (SearchInfo) objectInputStream.readObject();
+
+                        if (searchInfo.getRegularExpression().equals(fileSearchInfo.getRegularExpression()) &&
+                                searchInfo.getFileExtension().value().equals(fileSearchInfo.getFileExtension().value()) &&
+                                searchInfo.getLocation().equals(fileSearchInfo.getLocation()) &&
+                                compareDates(searchInfo.getDateIntervals(), fileSearchInfo.getDateIntervals())) {
+                            isFileFound = true;
+                            configProperties.setFileLink(file.toString());
+                            return FileVisitResult.TERMINATE;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return isFileFound;
+    }
+
+    public void fileGenerate(SearchInfo searchInfo) {
+
+        logSearch(searchInfo);
+
+        Logs logs = new Logs();
+        logs.setCreator("Имя, Фамилия создателя, OOO «Siblion»");
+        logs.setSearchInfo(searchInfo);
+        logs.setSearchInfoResult(searchInfoResult);
+        logs.setApplication("Created by LogSearch app");
+        try {
+            JAXBContext context = JAXBContext.newInstance(Logs.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+            File resultFile = generateUniqueFile(searchInfo.getFileExtension());
+
+            Result streamResult = new StreamResult(resultFile);
+
+            if (searchInfo.getFileExtension().value().equals("XML")) {
+                marshaller.marshal(logs, streamResult);
+                configProperties.setFileLink(resultFile.toString());
+                return;
+            }
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            marshaller.marshal(logs, outputStream);
+            InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+
+            Source xml = new StreamSource(inputStream);
+            Source xslt = null;
+
+            switch (searchInfo.getFileExtension()) {
+                case DOC: {
+                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/doc.xslt").toFile());
+                    break;
+                }
+                case LOG: {
+                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/log.xslt").toFile());
+                    break;
+                }
+                case PDF: {
+                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/pdf.xslt").toFile());
+                    break;
+                }
+                case RTF: {
+                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/rtf.xslt").toFile());
+                    break;
+                }
+                case HTML: {
+                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/html.xslt").toFile());
+                    break;
+                }
+                case XML: {
+                    //do nothing
+                }
+            }
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer(xslt);
+            transformer.transform(xml, streamResult);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            objectOutputStream.writeObject(searchInfo);
+            Files.setAttribute(resultFile.toPath(), "user:info", byteArrayOutputStream.toByteArray());
+
+            configProperties.setFileLink(resultFile.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean checkFileCreationTime(BasicFileAttributes attr, List<SignificantDateInterval> dateInterval) {
@@ -124,12 +260,52 @@ public class Search {
         LocalDateTime fileModificationTime = LocalDateTime
                 .ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
 
-        for (SignificantDateInterval interval : dateInterval) {
-            if (fileCreationTime.isBefore(interval.getDateTo())
-                    && fileModificationTime.isAfter(interval.getDateFrom())) {
-                return true;
+        return dateInterval.stream().anyMatch(interval -> fileCreationTime.isBefore(interval.getDateTo())
+                && fileModificationTime.isAfter(interval.getDateFrom()));
+    }
+
+    private boolean compareDates(List<SignificantDateInterval> currentIntervals,
+                                 List<SignificantDateInterval> fileIntervals) {
+        int count = 0;
+        for (SignificantDateInterval currentInterval : currentIntervals) {
+            boolean check = false;
+            for (SignificantDateInterval fileInterval : fileIntervals) {
+                if (check) break;
+                if (fileInterval.getDateFrom().isAfter(currentInterval.getDateFrom()) ||
+                        fileInterval.getDateTo().isBefore(currentInterval.getDateTo())) {
+                    check = false;
+                    continue;
+                }
+
+                long currentIntervalDifference = Duration.between(currentInterval.getDateTo(), currentInterval.getDateFrom()).toMillis();
+                long fileIntervalDifference = Duration.between(fileInterval.getDateTo(), fileInterval.getDateFrom()).toMillis();
+
+                if (fileIntervalDifference / currentIntervalDifference > 1.1) {
+                    check = false;
+                    continue;
+                }
+                check = true;
+            }
+            if (check) {
+                count++;
             }
         }
-        return false;
+        return count == currentIntervals.size();
+    }
+
+    private File generateUniqueFile(FileExtension fileExtension) {
+        String extension = "." + fileExtension.value().toLowerCase();
+        File dir = Paths.get(configProperties.getPath()).toFile();
+
+        String uniqueName = "result_log";
+        File file = new File(dir, uniqueName + extension);
+
+        int num = 0;
+        while (file.exists()) {
+            num++;
+            file = new File(dir, uniqueName + "_" + num + extension);
+        }
+
+        return file;
     }
 }

@@ -6,4 +6,8 @@ import com.example.logsearch.entities.SearchInfoResult;
 public interface LogService {
 
     SearchInfoResult logSearch(SearchInfo searchInfo);
+
+    boolean fileSearch(SearchInfo searchInfo);
+
+    void fileGenerate(SearchInfo searchInfo);
 }

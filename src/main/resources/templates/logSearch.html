@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:text="#{title}">Log Search</title>
+</head>
+<body>
+<h1 th:text="#{header}">Поиск логов сервера</h1>
+<form action="#" th:action="@{/logSearch}" th:object="${searchInfo}" method="post">
+
+    <label th:text="#{regex}">Введите регулярное выражение</label><br>
+    <input type="text" th:field="*{regularExpression}"><br>
+
+    <label th:text="#{intervals}" th:field="${searchInfo.getDateIntervals()}">Выберите временные промежутки</label><br>
+    <label th:text="#{from}">from</label>
+    <input type="datetime-local" th:field="*{dateIntervals}"><br>
+    <label th:text="#{to}">to</label>
+    <input type="datetime-local" th:field="*{getDateIntervals().get(1)}"><br>
+
+    <label th:text="#{location}">Введите расположение логов</label><br>
+    <input type="text" th:field="*{location}"><br>
+
+    <label th:text="#{extension}">Выберите расширение запрошенного файла</label><br>
+    <select th:field="*{fileExtension}">
+        <option th:each="type : ${searchInfo.getFileExtension()}"
+        th:value="${type}"
+        th:text="${type}">
+        </option>
+    </select>
+
+    <p><input type="submit" value="Send"></p>
+</form>
+</body>
+</html>

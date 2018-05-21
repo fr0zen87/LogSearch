@@ -8,6 +8,7 @@
 
 package com.example.logsearch.entities;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,7 +44,7 @@ import com.example.logsearch.utils.LocalDateTimeAdapter;
     "dateFrom",
     "dateTo"
 })
-public class SignificantDateInterval {
+public class SignificantDateInterval implements Serializable {
 
     @XmlElement(type = String.class)
     @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)

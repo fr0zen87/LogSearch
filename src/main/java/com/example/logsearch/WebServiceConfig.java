@@ -21,14 +21,14 @@ public class WebServiceConfig extends WsConfigurerAdapter {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(applicationContext);
         servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean<>(servlet, "/ws/*");
+        return new ServletRegistrationBean<>(servlet, "/soap/*");
     }
 
-    @Bean(name = "logSearch")
+    @Bean(name = "soapLogSearch")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema searchSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("SearchPort");
-        wsdl11Definition.setLocationUri("/ws");
+        wsdl11Definition.setLocationUri("/soap");
         wsdl11Definition.setTargetNamespace("http://entities.logsearch.example.com");
         wsdl11Definition.setSchema(searchSchema);
         return wsdl11Definition;
@@ -36,6 +36,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
     @Bean
     public XsdSchema searchSchema() {
-        return new SimpleXsdSchema(new ClassPathResource("SoapLogService.xsd"));
+        //return new SimpleXsdSchema(new ClassPathResource("SoapLogService.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource("schema1.xsd"));
     }
 }

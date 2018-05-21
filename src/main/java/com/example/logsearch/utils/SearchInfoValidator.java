@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.regex.Pattern;
 
 @Component
 public class SearchInfoValidator {
@@ -25,12 +24,12 @@ public class SearchInfoValidator {
             return;
         }
         if (searchInfo.getRegularExpression() == null ||
-                searchInfo.getDateInterval() == null) {
+                searchInfo.getDateIntervals() == null) {
             searchInfoResult.setErrorCode(37L);
             searchInfoResult.setErrorMessage("Missed mandatory parameter");
             return;
         }
-        for (SignificantDateInterval interval : searchInfo.getDateInterval()) {
+        for (SignificantDateInterval interval : searchInfo.getDateIntervals()) {
             if (interval.getDateFrom() == null) interval.setDateFrom(LocalDateTime.MIN);
             if (interval.getDateTo() == null) interval.setDateTo(LocalDateTime.MAX);
             try {
@@ -51,12 +50,6 @@ public class SearchInfoValidator {
                 searchInfoResult.setErrorMessage("DateFrom exceeds DateTo");
                 return;
             }
-        }
-        try {
-            Pattern.compile(searchInfo.getRegularExpression());
-        } catch (Exception e) {
-            searchInfoResult.setErrorCode(666L);
-            searchInfoResult.setErrorMessage("Incorrect regexp");
         }
     }
 }
