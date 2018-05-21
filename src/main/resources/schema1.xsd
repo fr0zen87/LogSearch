@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://entities.logsearch.example.com" xmlns:tns="http://entities.logsearch.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="logs" type="tns:Logs"/>
+
+  <xs:element name="searchInfo" type="tns:SearchInfo"/>
+
+  <xs:element name="searchInfoResult" type="tns:SearchInfoResult"/>
+
+  <xs:complexType name="Logs">
+    <xs:sequence>
+      <xs:element name="creator" type="xs:string" minOccurs="0"/>
+      <xs:element ref="tns:searchInfo" minOccurs="0"/>
+      <xs:element ref="tns:searchInfoResult" minOccurs="0"/>
+      <xs:element name="application" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SearchInfo">
+    <xs:sequence>
+      <xs:element name="regularExpression" type="xs:string"/>
+      <xs:element name="dateIntervals" type="tns:SignificantDateInterval" maxOccurs="unbounded"/>
+      <xs:element name="location" type="xs:string" minOccurs="0"/>
+      <xs:element name="realization" type="xs:boolean"/>
+      <xs:element name="fileExtension" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SignificantDateInterval">
+    <xs:sequence>
+      <xs:element name="dateFrom" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="dateTo" type="xs:dateTime" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SearchInfoResult">
+    <xs:sequence>
+      <xs:element name="emptyResultMessage" type="xs:string" minOccurs="0"/>
+      <xs:element name="errorCode" type="xs:long" minOccurs="0"/>
+      <xs:element name="errorMessage" type="xs:string" minOccurs="0"/>
+      <xs:element name="resultLogs" type="tns:ResultLogs" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ResultLogs">
+    <xs:sequence>
+      <xs:element name="timeMoment" type="xs:dateTime"/>
+      <xs:element name="fileName" type="xs:string"/>
+      <xs:element name="content" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="FileExtension">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PDF"/>
+      <xs:enumeration value="RTF"/>
+      <xs:enumeration value="HTML"/>
+      <xs:enumeration value="XML"/>
+      <xs:enumeration value="LOG"/>
+      <xs:enumeration value="DOC"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+
