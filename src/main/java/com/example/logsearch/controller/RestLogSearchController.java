@@ -1,8 +1,10 @@
 package com.example.logsearch.controller;
 
+import com.example.logsearch.entities.SearchInfoResult;
 import com.example.logsearch.service.LogService;
 import com.example.logsearch.entities.SearchInfo;
 import com.example.logsearch.utils.ConfigProperties;
+import com.example.logsearch.utils.SearchInfoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +21,23 @@ public class RestLogSearchController {
 
     private final LogService logService;
     private final ConfigProperties configProperties;
+    private final SearchInfoValidator validator;
 
     @Autowired
-    public RestLogSearchController(@Qualifier("logServiceImpl") LogService logService, ConfigProperties configProperties) {
+    public RestLogSearchController(@Qualifier("logServiceImpl") LogService logService,
+                                   ConfigProperties configProperties,
+                                   SearchInfoValidator validator) {
         this.logService = logService;
         this.configProperties = configProperties;
+        this.validator = validator;
     }
 
     @PostMapping("/restLogSearch")
-    ResponseEntity<?> logSearch(@RequestBody SearchInfo searchInfo) {
+    public ResponseEntity<?> logSearch(@RequestBody SearchInfo searchInfo) {
+        SearchInfoResult searchInfoResult = validator.validate(searchInfo);
+        if (searchInfoResult != null) {
+            return ResponseEntity.badRequest().body(searchInfoResult);
+        }
         if(searchInfo.isRealization()) {
             logService.logSearch(searchInfo);
             String link = configProperties.getFileLink().replaceAll("\\\\", "/");

@@ -1,10 +1,12 @@
 package com.example.logsearch.entities;
 
 import com.example.logsearch.utils.ConfigProperties;
-import com.example.logsearch.utils.SearchInfoValidator;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.CMYKColor;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.Result;
@@ -35,12 +37,10 @@ public class Search {
     private ResultLogs resultLogs;
     private SearchInfoResult searchInfoResult;
 
-    private final SearchInfoValidator validator;
     private final ConfigProperties configProperties;
 
     @Autowired
-    public Search(SearchInfoValidator validator, ConfigProperties configProperties) {
-        this.validator = validator;
+    public Search(ConfigProperties configProperties) {
         this.configProperties = configProperties;
     }
 
@@ -50,10 +50,6 @@ public class Search {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
         searchInfoResult = new SearchInfoResult();
-        validator.validate(searchInfo, searchInfoResult);
-        if (searchInfoResult.getErrorCode() != null) {
-            return searchInfoResult;
-        }
 
         Path logFilePath;
         Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
@@ -191,11 +187,17 @@ public class Search {
         logs.setSearchInfoResult(searchInfoResult);
         logs.setApplication("Created by LogSearch app");
         try {
+            File resultFile = generateUniqueFile(searchInfo.getFileExtension());
+
+            if (searchInfo.getFileExtension().value().equals("PDF")) {
+                createFile(logs, resultFile);
+                configProperties.setFileLink(resultFile.toString());
+                return;
+            }
+
             JAXBContext context = JAXBContext.newInstance(Logs.class);
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-            File resultFile = generateUniqueFile(searchInfo.getFileExtension());
 
             Result streamResult = new StreamResult(resultFile);
 
@@ -307,5 +309,79 @@ public class Search {
         }
 
         return file;
+    }
+
+    private void createFile(Logs logs, File file) {
+        try {
+            Document document = new Document(PageSize.A4, 50, 50, 50, 50);
+            PdfWriter.getInstance(document, new FileOutputStream(file));
+
+            document.open();
+
+            Paragraph paragraph;
+            Chapter chapter;
+            Section section;
+            PdfPTable table;
+
+            paragraph = new Paragraph("LogSearch Result", FontFactory.getFont(FontFactory.HELVETICA,
+                    20, Font.BOLDITALIC, new CMYKColor(0, 255, 255, 17)));
+
+            chapter = new Chapter(paragraph, 1);
+            chapter.setNumberDepth(0);
+
+            paragraph = new Paragraph("Created by: " + logs.getCreator(),
+                    FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+            chapter.add(paragraph);
+
+            paragraph = new Paragraph("Search info",
+                    FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD,
+                            new CMYKColor(0, 255, 255, 17)));
+            section = chapter.addSection(paragraph);
+
+            paragraph = new Paragraph("Regular expression: " + logs.getSearchInfo().getRegularExpression());
+            section.add(paragraph);
+
+            paragraph = new Paragraph("Location: " + logs.getSearchInfo().getLocation());
+            section.add(paragraph);
+
+            paragraph = new Paragraph("Date intervals:");
+            section.add(paragraph);
+
+            table = new PdfPTable(2);
+            table.setSpacingBefore(10);
+            table.setSpacingAfter(10);
+
+            table.addCell("Date from");
+            table.addCell("Date to");
+
+            List<SignificantDateInterval> intervals = logs.getSearchInfo().getDateIntervals();
+            for (int i = 0; i < intervals.size(); i++) {
+                table.addCell(logs.getSearchInfo().getDateIntervals().get(i).getDateFrom().toString());
+                table.addCell(logs.getSearchInfo().getDateIntervals().get(i).getDateTo().toString());
+            }
+
+            section.add(table);
+
+            paragraph = new Paragraph("Search result", FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD,
+                    new CMYKColor(0, 255, 255, 17)));
+            section = chapter.addSection(paragraph);
+
+            Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+            for (ResultLogs resultLogs : searchInfoResult.getResultLogs()) {
+                section.add(new Paragraph("File: " + resultLogs.getFileName(), smallFont));
+                section.add(new Paragraph("Time moment: " + resultLogs.getTimeMoment(), smallFont));
+                section.add(new Paragraph("Content: " + resultLogs.getContent(), smallFont));
+                section.add(new Paragraph(" "));
+            }
+
+            document.add(chapter);
+
+            document.close();
+
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

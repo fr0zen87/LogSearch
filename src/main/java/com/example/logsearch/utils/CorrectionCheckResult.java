@@ -8,17 +8,17 @@ public enum CorrectionCheckResult {
     ERROR44(44, "Incorrect resource name", "Неверно указано расположение логов"),
     ERROR3701(3701, "Missed async method file extension", "Не указано расширение файла для асинхронного метода");
 
-    private int errorCode;
+    private long errorCode;
     private String errorMessage;
     private String errorComment;
 
-    CorrectionCheckResult(int errorCode, String errorMessage, String errorComment) {
+    CorrectionCheckResult(long errorCode, String errorMessage, String errorComment) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
         this.errorComment = errorComment;
     }
 
-    public int getErrorCode() {
+    public long getErrorCode() {
         return errorCode;
     }
 
@@ -30,7 +30,7 @@ public enum CorrectionCheckResult {
         return errorComment;
     }
 
-    public void setErrorCode(int errorCode) {
+    public void setErrorCode(long errorCode) {
         this.errorCode = errorCode;
     }
 

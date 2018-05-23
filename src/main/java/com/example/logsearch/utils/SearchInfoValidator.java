@@ -14,21 +14,32 @@ import java.time.format.DateTimeParseException;
 @Component
 public class SearchInfoValidator {
 
-    public void validate(SearchInfo searchInfo, SearchInfoResult searchInfoResult) {
+    public SearchInfoResult validate(SearchInfo searchInfo) {
+
+        if (searchInfo.isRealization() && searchInfo.getFileExtension() == null) {
+            SearchInfoResult searchInfoResult = new SearchInfoResult();
+            searchInfoResult.setErrorCode(CorrectionCheckResult.ERROR3701.getErrorCode());
+            searchInfoResult.setErrorMessage(CorrectionCheckResult.ERROR3701.getErrorMessage());
+            return searchInfoResult;
+        }
 
         Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
         Path path = Paths.get(defaultPath.toString(), searchInfo.getLocation());
         if (!Files.exists(path)) {
-            searchInfoResult.setErrorCode(44L);
-            searchInfoResult.setErrorMessage("Incorrect resource name");
-            return;
+            SearchInfoResult searchInfoResult = new SearchInfoResult();
+            searchInfoResult.setErrorCode(CorrectionCheckResult.ERROR44.getErrorCode());
+            searchInfoResult.setErrorMessage(CorrectionCheckResult.ERROR44.getErrorMessage());
+            return searchInfoResult;
         }
+
         if (searchInfo.getRegularExpression() == null ||
                 searchInfo.getDateIntervals() == null) {
-            searchInfoResult.setErrorCode(37L);
-            searchInfoResult.setErrorMessage("Missed mandatory parameter");
-            return;
+            SearchInfoResult searchInfoResult = new SearchInfoResult();
+            searchInfoResult.setErrorCode(CorrectionCheckResult.ERROR37.getErrorCode());
+            searchInfoResult.setErrorMessage(CorrectionCheckResult.ERROR37.getErrorMessage());
+            return searchInfoResult;
         }
+
         for (SignificantDateInterval interval : searchInfo.getDateIntervals()) {
             if (interval.getDateFrom() == null) interval.setDateFrom(LocalDateTime.MIN);
             if (interval.getDateTo() == null) interval.setDateTo(LocalDateTime.MAX);
@@ -36,20 +47,26 @@ public class SearchInfoValidator {
                 LocalDateTime.parse(interval.getDateFrom().toString());
                 LocalDateTime.parse(interval.getDateTo().toString());
             } catch (DateTimeParseException e) {
-                searchInfoResult.setErrorCode(19L);
-                searchInfoResult.setErrorMessage("Incorrect time format");
-                return;
+                SearchInfoResult searchInfoResult = new SearchInfoResult();
+                searchInfoResult.setErrorCode(CorrectionCheckResult.ERROR19.getErrorCode());
+                searchInfoResult.setErrorMessage(CorrectionCheckResult.ERROR19.getErrorMessage());
+                return searchInfoResult;
             }
+
             if (interval.getDateFrom().isAfter(LocalDateTime.now())) {
-                searchInfoResult.setErrorCode(18L);
-                searchInfoResult.setErrorMessage("DateFrom exceeds PresentTime");
-                return;
+                SearchInfoResult searchInfoResult = new SearchInfoResult();
+                searchInfoResult.setErrorCode(CorrectionCheckResult.ERROR18.getErrorCode());
+                searchInfoResult.setErrorMessage(CorrectionCheckResult.ERROR18.getErrorMessage());
+                return searchInfoResult;
             }
+
             if (interval.getDateFrom().isAfter(interval.getDateTo())) {
-                searchInfoResult.setErrorCode(1L);
-                searchInfoResult.setErrorMessage("DateFrom exceeds DateTo");
-                return;
+                SearchInfoResult searchInfoResult = new SearchInfoResult();
+                searchInfoResult.setErrorCode(CorrectionCheckResult.ERROR1.getErrorCode());
+                searchInfoResult.setErrorMessage(CorrectionCheckResult.ERROR1.getErrorMessage());
+                return searchInfoResult;
             }
         }
+        return null;
     }
 }
