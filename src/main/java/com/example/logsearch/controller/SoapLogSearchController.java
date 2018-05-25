@@ -34,22 +34,15 @@ public class SoapLogSearchController {
     @ResponsePayload
     public ObjectResponse logSearch(@RequestPayload SearchInfo searchInfo) {
 
-        ObjectResponse response = null;
         SearchInfoResult searchInfoResult = validator.validate(searchInfo);
         if (searchInfoResult != null) {
-            response = new ObjectResponse();
-            response.setSearchInfoResult(searchInfoResult);
-            return response;
+            return new ObjectResponse(searchInfoResult);
         }
         if(searchInfo.isRealization()) {
             logService.logSearch(searchInfo);
             String link = configProperties.getFileLink().replaceAll("\\\\", "/");
-            response = new ObjectResponse();
-            response.setLink(link);
-            return response;
+            return new ObjectResponse(link);
         }
-        response = new ObjectResponse();
-        response.setSearchInfoResult(logService.logSearch(searchInfo));
-        return response;
+        return new ObjectResponse(logService.logSearch(searchInfo));
     }
 }

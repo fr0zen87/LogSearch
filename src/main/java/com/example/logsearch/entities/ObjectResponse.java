@@ -15,6 +15,14 @@ public class ObjectResponse {
     public ObjectResponse() {
     }
 
+    public ObjectResponse(String link) {
+        this.link = link;
+    }
+
+    public ObjectResponse(SearchInfoResult searchInfoResult) {
+        this.searchInfoResult = searchInfoResult;
+    }
+
     public String getLink() {
         return link;
     }

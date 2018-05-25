@@ -13,6 +13,7 @@ import org.springframework.web.servlet.view.xslt.XsltViewResolver;
 
 import java.util.Locale;
 
+@EnableWebMvc
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
