@@ -1,7 +1,7 @@
 package com.example.logsearch.controller;
 
 import com.example.logsearch.entities.SearchInfo;
-import com.example.logsearch.service.WebLogService;
+import com.example.logsearch.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class WebLogSearchController {
 
-    private final WebLogService webLogService;
+    private final LogService webLogService;
 
     @Autowired
-    public WebLogSearchController(WebLogService webLogService) {
+    public WebLogSearchController(LogService webLogService) {
         this.webLogService = webLogService;
     }
 

@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1 th:text="#{header}">Поиск логов сервера</h1>
-<form action="#" th:action="@{/logSearch}" th:object="${searchInfo}" method="post">
+<form action="#" th:action="@{/logSearch}" th:data="${searchInfo}" method="post">
 
     <label th:text="#{regex}">Введите регулярное выражение</label><br>
     <input type="text" th:field="*{regularExpression}"><br>

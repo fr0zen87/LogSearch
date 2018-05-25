@@ -7,6 +7,15 @@
 
   <xs:element name="searchInfoResult" type="tns:SearchInfoResult"/>
 
+  <xs:element name="result" type="tns:objectResponse"/>
+
+  <xs:complexType name="objectResponse">
+    <xs:sequence>
+      <xs:element name="link" type="xs:string" minOccurs="0"/>
+      <xs:element ref="tns:searchInfoResult" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="Logs">
     <xs:sequence>
       <xs:element name="creator" type="xs:string" minOccurs="0"/>

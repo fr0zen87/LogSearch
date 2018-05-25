@@ -6,7 +6,6 @@ import com.example.logsearch.entities.SearchInfo;
 import com.example.logsearch.utils.ConfigProperties;
 import com.example.logsearch.utils.SearchInfoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +23,7 @@ public class RestLogSearchController {
     private final SearchInfoValidator validator;
 
     @Autowired
-    public RestLogSearchController(@Qualifier("logServiceImpl") LogService logService,
+    public RestLogSearchController(LogService logService,
                                    ConfigProperties configProperties,
                                    SearchInfoValidator validator) {
         this.logService = logService;

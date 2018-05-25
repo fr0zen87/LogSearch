@@ -10,6 +10,8 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.xml.bind.JAXBContext;
@@ -43,6 +45,7 @@ public class Search {
     private SearchInfoResult searchInfoResult;
 
     private final ConfigProperties configProperties;
+    private final Logger logger = LoggerFactory.getLogger(Search.class);
 
     @Autowired
     public Search(ConfigProperties configProperties) {
@@ -50,6 +53,9 @@ public class Search {
     }
 
     public SearchInfoResult logSearch(SearchInfo searchInfo) {
+
+        logger.info("Starting logs search");
+        long start = System.currentTimeMillis();
 
         List<SignificantDateInterval> dateInterval = searchInfo.getDateIntervals();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
@@ -132,10 +138,17 @@ public class Search {
         } else {
             searchInfoResult.getResultLogs().sort(Comparator.comparing(ResultLogs::getTimeMoment));
         }
+
+        logger.info("Logs search finished in " + (System.currentTimeMillis() - start) + " ms");
+
         return searchInfoResult;
     }
 
     public boolean fileSearch(SearchInfo searchInfo) {
+
+        logger.info("Starting file search");
+        long start = System.currentTimeMillis();
+
         isFileFound = false;
         Path path = Paths.get(configProperties.getPath());
         if (!Files.exists(path)) {
@@ -179,10 +192,16 @@ public class Search {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        logger.info("File search finished in " + (System.currentTimeMillis() - start) + " ms");
+
         return isFileFound;
     }
 
     public void fileGenerate(SearchInfo searchInfo) {
+
+        logger.info("Starting " + searchInfo.getFileExtension().value() + " file generation");
+        long start = System.currentTimeMillis();
 
         try {
             logSearch(searchInfo);
@@ -202,12 +221,13 @@ public class Search {
 
             String fileExtension = searchInfo.getFileExtension().value();
             if (fileExtension.equals("PDF") || fileExtension.equals("RTF") || fileExtension.equals("DOC")) {
-                Path tempFile = Files.createTempFile(Paths.get("C:\\Found logs"), "temp", ".xml");
+                Path tempFile = Files.createTempFile(Paths.get(configProperties.getPath()), "temp", ".xml");
                 marshaller.marshal(logs, tempFile.toFile());
                 createReport(tempFile, fileExtension, resultFile);
                 Files.delete(tempFile);
                 configProperties.setFileLink(resultFile.toString());
                 writeAttribute(searchInfo, resultFile);
+                logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
                 return;
             }
 
@@ -217,6 +237,7 @@ public class Search {
                 marshaller.marshal(logs, streamResult);
                 configProperties.setFileLink(resultFile.toString());
                 writeAttribute(searchInfo, resultFile);
+                logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
                 return;
             }
 
@@ -238,6 +259,8 @@ public class Search {
 
             configProperties.setFileLink(resultFile.toString());
             writeAttribute(searchInfo, resultFile);
+
+            logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
         } catch (Exception e) {
             e.printStackTrace();
         }
