@@ -1,10 +1,15 @@
 package com.example.logsearch.entities;
 
 import com.example.logsearch.utils.ConfigProperties;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.CMYKColor;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRXmlDataSource;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.JRRtfExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.xml.bind.JAXBContext;
@@ -179,31 +184,39 @@ public class Search {
 
     public void fileGenerate(SearchInfo searchInfo) {
 
-        logSearch(searchInfo);
-
-        Logs logs = new Logs();
-        logs.setCreator("Имя, Фамилия создателя, OOO «Siblion»");
-        logs.setSearchInfo(searchInfo);
-        logs.setSearchInfoResult(searchInfoResult);
-        logs.setApplication("Created by LogSearch app");
         try {
-            File resultFile = generateUniqueFile(searchInfo.getFileExtension());
+            logSearch(searchInfo);
 
-            if (searchInfo.getFileExtension().value().equals("PDF")) {
-                createFile(logs, resultFile);
-                configProperties.setFileLink(resultFile.toString());
-                return;
-            }
+            Logs logs = new Logs();
+            logs.setCreator("Имя, Фамилия создателя, OOO «Siblion»");
+            logs.setSearchInfo(searchInfo);
+            logs.setSearchInfoResult(searchInfoResult);
+            logs.setApplication("Created by LogSearch app");
+
+            File resultFile = generateUniqueFile(searchInfo.getFileExtension());
+            Files.createFile(resultFile.toPath());
 
             JAXBContext context = JAXBContext.newInstance(Logs.class);
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-            Result streamResult = new StreamResult(resultFile);
+            String fileExtension = searchInfo.getFileExtension().value();
+            if (fileExtension.equals("PDF") || fileExtension.equals("RTF") || fileExtension.equals("DOC")) {
+                Path tempFile = Files.createTempFile(Paths.get("C:\\Found logs"), "temp", ".xml");
+                marshaller.marshal(logs, tempFile.toFile());
+                createReport(tempFile, fileExtension, resultFile);
+                Files.delete(tempFile);
+                configProperties.setFileLink(resultFile.toString());
+                writeAttribute(searchInfo, resultFile);
+                return;
+            }
 
-            if (searchInfo.getFileExtension().value().equals("XML")) {
+            Result streamResult = new StreamResult(resultFile.toString());
+
+            if (fileExtension.equals("XML")) {
                 marshaller.marshal(logs, streamResult);
                 configProperties.setFileLink(resultFile.toString());
+                writeAttribute(searchInfo, resultFile);
                 return;
             }
 
@@ -213,46 +226,28 @@ public class Search {
 
             Source xml = new StreamSource(inputStream);
             Source xslt = null;
-
-            switch (searchInfo.getFileExtension()) {
-                case DOC: {
-                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/doc.xslt").toFile());
-                    break;
-                }
-                case LOG: {
-                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/log.xslt").toFile());
-                    break;
-                }
-                case PDF: {
-                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/pdf.xslt").toFile());
-                    break;
-                }
-                case RTF: {
-                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/rtf.xslt").toFile());
-                    break;
-                }
-                case HTML: {
-                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/html.xslt").toFile());
-                    break;
-                }
-                case XML: {
-                    //do nothing
-                }
+            if (fileExtension.equals("LOG")) {
+                xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/log.xslt").toFile());
+            } else if (fileExtension.equals("HTML")) {
+                xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/html.xslt").toFile());
             }
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer(xslt);
             transformer.transform(xml, streamResult);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            objectOutputStream.writeObject(searchInfo);
-            Files.setAttribute(resultFile.toPath(), "user:info", byteArrayOutputStream.toByteArray());
-
             configProperties.setFileLink(resultFile.toString());
+            writeAttribute(searchInfo, resultFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void writeAttribute(SearchInfo searchInfo, File resultFile) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(searchInfo);
+        Files.setAttribute(resultFile.toPath(), "user:info", byteArrayOutputStream.toByteArray());
     }
 
     private boolean checkFileCreationTime(BasicFileAttributes attr, List<SignificantDateInterval> dateInterval) {
@@ -311,76 +306,37 @@ public class Search {
         return file;
     }
 
-    private void createFile(Logs logs, File file) {
+    private void createReport(Path tempFile, String fileExtension, File file) {
         try {
-            Document document = new Document(PageSize.A4, 50, 50, 50, 50);
-            PdfWriter.getInstance(document, new FileOutputStream(file));
+            JRXmlDataSource dataSource = new JRXmlDataSource(tempFile.toFile());
 
-            document.open();
+            File styleSheet = new File("src/main/resources/jrxml/report_style.jrxml");
+            JasperDesign jasperDesign = JRXmlLoader.load(styleSheet);
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
 
-            Paragraph paragraph;
-            Chapter chapter;
-            Section section;
-            PdfPTable table;
-
-            paragraph = new Paragraph("LogSearch Result", FontFactory.getFont(FontFactory.HELVETICA,
-                    20, Font.BOLDITALIC, new CMYKColor(0, 255, 255, 17)));
-
-            chapter = new Chapter(paragraph, 1);
-            chapter.setNumberDepth(0);
-
-            paragraph = new Paragraph("Created by: " + logs.getCreator(),
-                    FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
-            chapter.add(paragraph);
-
-            paragraph = new Paragraph("Search info",
-                    FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD,
-                            new CMYKColor(0, 255, 255, 17)));
-            section = chapter.addSection(paragraph);
-
-            paragraph = new Paragraph("Regular expression: " + logs.getSearchInfo().getRegularExpression());
-            section.add(paragraph);
-
-            paragraph = new Paragraph("Location: " + logs.getSearchInfo().getLocation());
-            section.add(paragraph);
-
-            paragraph = new Paragraph("Date intervals:");
-            section.add(paragraph);
-
-            table = new PdfPTable(2);
-            table.setSpacingBefore(10);
-            table.setSpacingAfter(10);
-
-            table.addCell("Date from");
-            table.addCell("Date to");
-
-            List<SignificantDateInterval> intervals = logs.getSearchInfo().getDateIntervals();
-            for (int i = 0; i < intervals.size(); i++) {
-                table.addCell(logs.getSearchInfo().getDateIntervals().get(i).getDateFrom().toString());
-                table.addCell(logs.getSearchInfo().getDateIntervals().get(i).getDateTo().toString());
+            switch (fileExtension) {
+                case "PDF" : {
+                    JasperExportManager.exportReportToPdfFile(jasperPrint, file.toString());
+                    break;
+                }
+                case "RTF" : {
+                    JRRtfExporter exporter = new JRRtfExporter();
+                    exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                    exporter.setExporterOutput(new SimpleWriterExporterOutput(file));
+                    exporter.exportReport();
+                    break;
+                }
+                case "DOC" : {
+                    JRDocxExporter exporter = new JRDocxExporter();
+                    exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                    exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(file));
+                    exporter.exportReport();
+                    break;
+                }
             }
 
-            section.add(table);
-
-            paragraph = new Paragraph("Search result", FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD,
-                    new CMYKColor(0, 255, 255, 17)));
-            section = chapter.addSection(paragraph);
-
-            Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
-            for (ResultLogs resultLogs : searchInfoResult.getResultLogs()) {
-                section.add(new Paragraph("File: " + resultLogs.getFileName(), smallFont));
-                section.add(new Paragraph("Time moment: " + resultLogs.getTimeMoment(), smallFont));
-                section.add(new Paragraph("Content: " + resultLogs.getContent(), smallFont));
-                section.add(new Paragraph(" "));
-            }
-
-            document.add(chapter);
-
-            document.close();
-
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
+        } catch (JRException e) {
             e.printStackTrace();
         }
     }

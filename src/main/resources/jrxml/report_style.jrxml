@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.5.1.final using JasperReports Library version 6.5.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="595" pageHeight="842" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="64942ade-a8a7-49ca-a389-43560e188fa4">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="xml adapter"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Default" isDefault="true" isBlankWhenNull="true" fontName="DejaVu Sans">
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<subDataset name="dateIntervals" uuid="01a73f63-d3e0-428b-b3c3-cae35431977c">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="xml adapter"/>
+		<queryString language="XPath">
+			<![CDATA[/logs/searchInfo/dateIntervals]]>
+		</queryString>
+		<field name="dateFrom" class="java.lang.String">
+			<fieldDescription><![CDATA[dateFrom]]></fieldDescription>
+		</field>
+		<field name="dateTo" class="java.lang.String">
+			<fieldDescription><![CDATA[dateTo]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="Result set" uuid="4a02854f-e268-4705-be90-bc01c6dd88ac">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="xml adapter"/>
+		<queryString language="xPath">
+			<![CDATA[/logs/searchInfoResult/resultLogs]]>
+		</queryString>
+		<field name="timeMoment" class="java.lang.String">
+			<property name="net.sf.jasperreports.xpath.field.expression" value="timeMoment"/>
+			<fieldDescription><![CDATA[timeMoment]]></fieldDescription>
+		</field>
+		<field name="fileName" class="java.lang.String">
+			<property name="net.sf.jasperreports.xpath.field.expression" value="fileName"/>
+			<fieldDescription><![CDATA[fileName]]></fieldDescription>
+		</field>
+		<field name="content" class="java.lang.String">
+			<property name="net.sf.jasperreports.xpath.field.expression" value="content"/>
+			<fieldDescription><![CDATA[content]]></fieldDescription>
+		</field>
+	</subDataset>
+	<queryString language="xPath">
+		<![CDATA[/logs]]>
+	</queryString>
+	<field name="creator" class="java.lang.String">
+		<fieldDescription><![CDATA[/logs/creator]]></fieldDescription>
+	</field>
+	<field name="application" class="java.lang.String">
+		<fieldDescription><![CDATA[/logs/application]]></fieldDescription>
+	</field>
+	<field name="regularExpression" class="java.lang.String">
+		<fieldDescription><![CDATA[/logs/searchInfo/regularExpression]]></fieldDescription>
+	</field>
+	<field name="location" class="java.lang.String">
+		<fieldDescription><![CDATA[/logs/searchInfo/location]]></fieldDescription>
+	</field>
+	<group name="Group1">
+		<groupHeader>
+			<band height="150">
+				<staticText>
+					<reportElement x="0" y="0" width="180" height="35" uuid="120c011e-2322-4e00-ba0a-7f86421059e3"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Comic Sans MS" size="16" isBold="true"/>
+					</textElement>
+					<text><![CDATA[1. Search info]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="" x="0" y="42" width="130" height="60" forecolor="#4925E8" backcolor="#00D0FF" uuid="139501db-a618-4bcc-a18c-c27c1e9e3643"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+						<paragraph leftIndent="10"/>
+					</textElement>
+					<text><![CDATA[Regular expression]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="" x="130" y="42" width="150" height="60" forecolor="#4925E8" backcolor="#00D0FF" uuid="a44003fd-56d6-40e9-bd02-4b6edd186514"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+						<paragraph leftIndent="10"/>
+					</textElement>
+					<text><![CDATA[Location]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="" x="280" y="72" width="140" height="30" forecolor="#4925E8" backcolor="#00D0FF" uuid="1f8730d2-5e0a-47f8-b09e-8637fb19f1f7"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+						<paragraph leftIndent="10"/>
+					</textElement>
+					<text><![CDATA[Date from]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="" x="420" y="72" width="140" height="30" forecolor="#4925E8" backcolor="#00D0FF" uuid="dedf676e-89c2-4af9-beb6-3163c62a6f23"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+						<paragraph leftIndent="10"/>
+					</textElement>
+					<text><![CDATA[Date to]]></text>
+				</staticText>
+				<staticText>
+					<reportElement key="" x="280" y="42" width="280" height="30" forecolor="#4925E8" backcolor="#00D0FF" uuid="530b94f1-db06-42fd-8ddb-0f70fc34d39c"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+						<paragraph leftIndent="10"/>
+					</textElement>
+					<text><![CDATA[Date intervals]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="102" width="130" height="40" uuid="c3e71172-7a74-45ac-bca4-44f04d869a9d"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="12"/>
+						<paragraph leftIndent="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{regularExpression}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="130" y="102" width="150" height="40" uuid="589c5104-cd3f-4f91-8913-05ddde0007f0"/>
+					<box>
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" rotation="None">
+						<font size="12"/>
+						<paragraph lineSpacing="Single" leftIndent="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{location}]]></textFieldExpression>
+				</textField>
+				<componentElement>
+					<reportElement stretchType="ContainerHeight" x="280" y="102" width="140" height="40" uuid="68234fdc-2865-4ff9-9e09-7825d44039d4">
+						<property name="net.sf.jasperreports.export.headertoolbar.table.name" value=""/>
+					</reportElement>
+					<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+						<datasetRun subDataset="dateIntervals" uuid="38c897f8-f0b0-49a9-bdf2-89bce52bf3c4">
+							<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("/logs/searchInfo/dateIntervals")]]></dataSourceExpression>
+						</datasetRun>
+						<jr:listContents height="40" width="140">
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="140" height="40" uuid="9aee6b19-91b6-4b51-8a87-7939ebaa6851"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement verticalAlignment="Middle">
+									<font size="12"/>
+									<paragraph leftIndent="10"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dateFrom}]]></textFieldExpression>
+							</textField>
+						</jr:listContents>
+					</jr:list>
+				</componentElement>
+				<componentElement>
+					<reportElement stretchType="ContainerHeight" x="420" y="102" width="140" height="40" uuid="0f2ac7ec-1e6b-4b9c-95aa-3f4603102753"/>
+					<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+						<datasetRun subDataset="dateIntervals" uuid="8c73e654-aa4b-4b83-b8f5-c79eb4337621">
+							<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("/logs/searchInfo/dateIntervals")]]></dataSourceExpression>
+						</datasetRun>
+						<jr:listContents height="40" width="140">
+							<textField isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="140" height="40" uuid="68c630bc-e26b-4e5c-8b6b-83efef45ff77"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement verticalAlignment="Middle">
+									<font size="12"/>
+									<paragraph leftIndent="10"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dateTo}]]></textFieldExpression>
+							</textField>
+						</jr:listContents>
+					</jr:list>
+				</componentElement>
+				<textField>
+					<reportElement x="280" y="0" width="280" height="35" uuid="a65a289a-6f97-4b32-a33c-b6dbfabb0513"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA["Created by: " +$F{creator}  + ",\n" + "creation time: " + new Date()]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Group2">
+		<groupHeader>
+			<band height="50">
+				<staticText>
+					<reportElement x="0" y="5" width="180" height="40" uuid="adb3dee7-8981-4ee1-bf00-08c84be248cc"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Comic Sans MS" size="16" isBold="true"/>
+					</textElement>
+					<text><![CDATA[2. Search result]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="55" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="460" height="46" uuid="3e393d68-6823-4082-b578-2e5a2fecaeb2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Comic Sans MS" size="20" isBold="true" isItalic="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Log search report]]></text>
+			</staticText>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement x="460" y="0" width="100" height="46" uuid="2ff8d0aa-e956-41fc-af52-3eb9efc0903b"/>
+				<imageExpression><![CDATA["C:\\Users\\APZhukov\\IdeaProjects\\LogSearch\\src\\main\\resources\\images\\logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<detail>
+		<band height="95" splitType="Stretch">
+			<componentElement>
+				<reportElement x="0" y="0" width="565" height="89" uuid="4a34e816-9fe1-44e7-b966-969ba02ebede">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Result set" uuid="48ca1655-4fc8-4c1f-bd84-c59a9f8639ad">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.engine.data.JRXmlDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("/logs/searchInfoResult/resultLogs")]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="100" uuid="fb491f23-e9e8-4d10-83fd-d2f9fdde36c5">
+						<jr:columnHeader style="Table_CH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="30" uuid="52cec069-a7e1-4fd6-b9c3-1ff335a55e08"/>
+								<textElement textAlignment="Center">
+									<font fontName="Comic Sans MS" size="12" isBold="true"/>
+								</textElement>
+								<text><![CDATA[timeMoment]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="Table_CH" height="30"/>
+						<jr:detailCell style="Table_TD" height="30">
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement positionType="Float" x="0" y="0" width="100" height="30" isPrintWhenDetailOverflows="true" uuid="e929ec15-9c76-4d12-bb7d-88201fb76bc7"/>
+								<textElement textAlignment="Left" markup="none">
+									<font fontName="Comic Sans MS" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{timeMoment}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="951234f5-6b82-4f58-a4ee-d99ffa9356e5">
+						<jr:columnHeader style="Table_CH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="30" uuid="9d298518-d1d2-408c-9150-b1cc858df61a"/>
+								<textElement textAlignment="Center">
+									<font fontName="Comic Sans MS" size="12" isBold="true"/>
+								</textElement>
+								<text><![CDATA[fileName]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="Table_CH" height="30"/>
+						<jr:detailCell style="Table_TD" height="30">
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement positionType="Float" x="0" y="0" width="100" height="30" isPrintWhenDetailOverflows="true" uuid="b00e06fd-eec1-4791-9f6c-993a9dd0de4b"/>
+								<textElement textAlignment="Left" markup="none">
+									<font fontName="Comic Sans MS" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{fileName}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="365" uuid="c65a915c-092b-435d-a775-213be22ee376">
+						<jr:columnHeader style="Table_CH" height="30">
+							<staticText>
+								<reportElement x="0" y="0" width="365" height="30" uuid="2ee3d55d-32d4-4e26-a745-29978ae683e0"/>
+								<textElement textAlignment="Center">
+									<font fontName="Comic Sans MS" size="12" isBold="true"/>
+								</textElement>
+								<text><![CDATA[content]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="Table_CH" height="30"/>
+						<jr:detailCell style="Table_TD" height="30">
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement positionType="Float" x="0" y="0" width="365" height="30" isPrintWhenDetailOverflows="true" uuid="04bf6135-9ad5-4b78-847e-c1300708204b"/>
+								<textElement textAlignment="Left" markup="none">
+									<font fontName="Comic Sans MS" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{content}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="0" width="560" height="20" uuid="82a37d43-3558-4ade-a18b-0b57a6f4421d"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{application}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="73" height="21" uuid="06789304-a6de-498c-b09a-e86f17e3c71b"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
