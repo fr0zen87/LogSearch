@@ -2,33 +2,134 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/sticky-footer.css" rel="stylesheet">
+
     <title th:text="#{title}">Log Search</title>
+
 </head>
-<body>
-<h1 th:text="#{header}">Поиск логов сервера</h1>
-<form action="#" th:action="@{/logSearch}" th:data="${searchInfo}" method="post">
+<body style="background-image: url(images/back.png)">
 
-    <label th:text="#{regex}">Введите регулярное выражение</label><br>
-    <input type="text" th:field="*{regularExpression}"><br>
+<!-- Fixed navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">LogSearch app</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Nav header</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
 
-    <label th:text="#{intervals}" th:field="${searchInfo.getDateIntervals()}">Выберите временные промежутки</label><br>
-    <label th:text="#{from}">from</label>
-    <input type="datetime-local" th:field="*{dateIntervals}"><br>
-    <label th:text="#{to}">to</label>
-    <input type="datetime-local" th:field="*{getDateIntervals().get(1)}"><br>
+<div class="container" style="background-color: white;">
 
-    <label th:text="#{location}">Введите расположение логов</label><br>
-    <input type="text" th:field="*{location}"><br>
+    <div class="jumbotron">
+        <h1 th:text="#{header}">Поиск логов сервера</h1>
+        <img style="float:right" th:src="@{/images/logo.png}" alt="siblion">
+    </div>
 
-    <label th:text="#{extension}">Выберите расширение запрошенного файла</label><br>
-    <select th:field="*{fileExtension}">
-        <option th:each="type : ${searchInfo.getFileExtension()}"
-        th:value="${type}"
-        th:text="${type}">
-        </option>
-    </select>
+    <div>
+        <form action="#" th:action="@{/logSearch}" th:object="${searchInfo}" method="post">
 
-    <p><input type="submit" value="Send"></p>
-</form>
+            <h3><label class="label label-primary" th:text="#{regex}">Введите регулярное выражение</label></h3>
+            <input type="text" th:field="*{regularExpression}"><br>
+
+            <div class=".col-md-6">
+                <h3><label class="label label-primary" th:text="#{intervals}">Выберите временные промежутки</label>
+                </h3>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="row">
+                        <th th:if="*{!dateIntervals.isEmpty()}">#</th>
+                        <th th:text="#{from}" th:if="*{!dateIntervals.isEmpty()}">Variety</th>
+                        <th th:text="#{to}" th:if="*{!dateIntervals.isEmpty()}">Seeds per cell</th>
+                        <th>
+                            <button type="submit" name="addRow" th:text="#{addRow}">Add row</button>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row, rowStat : *{dateIntervals}" class="row">
+                        <td th:text="${rowStat.count}">1</td>
+                        <td>
+                            <input type="datetime-local" th:field="*{dateIntervals[__${rowStat.index}__].dateFrom}"
+                                   th:errorclass="fieldError"/>
+                        </td>
+                        <td>
+                            <input type="datetime-local" th:field="*{dateIntervals[__${rowStat.index}__].dateTo}"
+                                   th:errorclass="fieldError"/>
+                        </td>
+                        <td>
+                            <button type="submit" name="removeRow" th:value="${rowStat.index}"
+                                    th:text="#{removeRow}">
+                                Remove row
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3><label class="label label-primary" th:text="#{location}">Введите расположение логов</label></h3>
+            <input type="text" th:field="*{location}"><br>
+
+            <h3><label class="label label-primary" th:text="#{realization}">Сохранить результат в файл?</label></h3>
+            <input type="radio" th:field="*{realization}" th:value="true" th:text="#{yes}"><br>
+            <input type="radio" th:field="*{realization}" th:value="false" th:text="#{no}"><br>
+
+            <h3><label class="label label-primary" th:text="#{extension}">Выберите расширение запрошенного
+                файла</label>
+            </h3>
+            <select th:field="*{fileExtension}">
+                <option th:each="fileExtension : ${allExtensions}"
+                        th:value="${fileExtension}"
+                        th:text="#{${'searchInfo.' + fileExtension}}">
+                </option>
+            </select><br>
+
+            <button style="margin: 10px" type="submit" class="btn btn-lg btn-success">Search</button>
+        </form>
+    </div>
+</div>
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">Copyright &copy;
+            <script>document.write("" + new Date().getFullYear());</script>
+            APZ. All rights reserved.
+        </p>
+    </div>
+</footer>
+
+<script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+<script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 </body>
 </html>
