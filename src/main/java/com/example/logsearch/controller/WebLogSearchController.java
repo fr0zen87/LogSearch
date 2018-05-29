@@ -54,12 +54,11 @@ public class WebLogSearchController {
     }
 
     @PostMapping(value = "/logSearch")
-    public String logSearch(@Valid SearchInfo searchInfo, BindingResult bindingResult) {
+    public ModelAndView logSearch(@Valid SearchInfo searchInfo, BindingResult bindingResult) {
         ModelAndView modelAndView = new ModelAndView();
         if (bindingResult.hasErrors()) {
-            //modelAndView.addObject(new SearchInfo());
-            //return modelAndView;
-            return "logSearch";
+            modelAndView.addObject(new SearchInfo());
+            return modelAndView;
         }
         SearchInfoResult searchInfoResult = logService.logSearch(searchInfo);
         if (searchInfo.isRealization()) {
@@ -70,8 +69,7 @@ public class WebLogSearchController {
             modelAndView.setViewName("result");
             modelAndView.addObject("searchInfoResult", searchInfoResult);
         }
-        //return modelAndView;
-        return "logSearch";
+        return modelAndView;
     }
 
     @RequestMapping(value="/logSearch", params={"addRow"})
