@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-head"></div>
+    <div th:replace="fragments/footer :: footer-head"></div>
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div class="container">
+    <div class="alert alert-success" role="alert" th:if="*{searchInfoResult.getEmptyResultMessage() != null}">
+        <strong th:text="*{searchInfoResult.getEmptyResultMessage()}"></strong>
+    </div>
+    <div class="row" th:if="*{searchInfoResult.getEmptyResultMessage() == null}">
+        <div class="col-md-6">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Time moment</th>
+                    <th>File name</th>
+                    <th>Content</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row, rowStat : *{searchInfoResult.getResultLogs()}">
+                    <td th:text="${rowStat.count}">1</td>
+                    <td th:text="${row.getTimeMoment()}"></td>
+                    <td th:text="${row.getFileName()}"></td>
+                    <td th:text="${row.getContent()}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

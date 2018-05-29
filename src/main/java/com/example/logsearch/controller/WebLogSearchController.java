@@ -2,18 +2,22 @@ package com.example.logsearch.controller;
 
 import com.example.logsearch.entities.FileExtension;
 import com.example.logsearch.entities.SearchInfo;
+import com.example.logsearch.entities.SearchInfoResult;
 import com.example.logsearch.entities.SignificantDateInterval;
 import com.example.logsearch.service.LogService;
+import com.example.logsearch.utils.ConfigProperties;
+import com.example.logsearch.utils.WebSearchInfoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,10 +25,20 @@ import java.util.List;
 public class WebLogSearchController {
 
     private final LogService logService;
+    private final ConfigProperties configProperties;
 
     @Autowired
-    public WebLogSearchController(LogService logService) {
+    public WebLogSearchController(LogService logService,
+                                  @Qualifier(value = "configProperties") ConfigProperties properties) {
         this.logService = logService;
+        this.configProperties = properties;
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        if (binder.getTarget() instanceof SearchInfo) {
+            binder.setValidator(new WebSearchInfoValidator());
+        }
     }
 
     @ModelAttribute("allExtensions")
@@ -40,8 +54,23 @@ public class WebLogSearchController {
     }
 
     @PostMapping(value = "/logSearch")
-    public String logSearch(SearchInfo searchInfo, BindingResult bindingResult, Model model) {
-        logService.logSearch(searchInfo);
+    public String logSearch(@Valid SearchInfo searchInfo, BindingResult bindingResult) {
+        ModelAndView modelAndView = new ModelAndView();
+        if (bindingResult.hasErrors()) {
+            //modelAndView.addObject(new SearchInfo());
+            //return modelAndView;
+            return "logSearch";
+        }
+        SearchInfoResult searchInfoResult = logService.logSearch(searchInfo);
+        if (searchInfo.isRealization()) {
+            modelAndView.setViewName("link");
+            modelAndView.addObject("link", configProperties.getFileLink());
+            modelAndView.addObject("forHref", "file:///" + configProperties.getFileLink());
+        } else {
+            modelAndView.setViewName("result");
+            modelAndView.addObject("searchInfoResult", searchInfoResult);
+        }
+        //return modelAndView;
         return "logSearch";
     }
 
