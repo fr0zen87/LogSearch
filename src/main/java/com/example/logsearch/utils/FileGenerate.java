@@ -15,6 +15,7 @@ import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBContext;
@@ -44,7 +45,8 @@ public class FileGenerate {
         this.search = search;
     }
 
-    public void fileGenerate(SearchInfo searchInfo) {
+    @Async
+    public void fileGenerate(SearchInfo searchInfo, File file) {
 
         logger.info("Starting " + searchInfo.getFileExtension().value() + " file generation");
         long start = System.currentTimeMillis();
@@ -56,8 +58,7 @@ public class FileGenerate {
             logs.setSearchInfoResult(search.logSearch(searchInfo));
             logs.setApplication("Created by LogSearch app");
 
-            File resultFile = generateUniqueFile(searchInfo.getFileExtension());
-            Files.createFile(resultFile.toPath());
+            Files.createFile(file.toPath());
 
             JAXBContext context = JAXBContext.newInstance(Logs.class);
             Marshaller marshaller = context.createMarshaller();
@@ -67,20 +68,18 @@ public class FileGenerate {
             if (fileExtension.equals("PDF") || fileExtension.equals("RTF") || fileExtension.equals("DOC")) {
                 Path tempFile = Files.createTempFile(Paths.get(configProperties.getPath()), "temp", ".xml");
                 marshaller.marshal(logs, tempFile.toFile());
-                createReport(tempFile, fileExtension, resultFile);
+                createReport(tempFile, fileExtension, file);
                 Files.delete(tempFile);
-                configProperties.setFileLink(resultFile.toString());
-                writeAttribute(searchInfo, resultFile);
+                writeAttribute(searchInfo, file);
                 logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
                 return;
             }
 
-            Result streamResult = new StreamResult(resultFile.toString());
+            Result streamResult = new StreamResult(file.toString());
 
             if (fileExtension.equals("XML")) {
                 marshaller.marshal(logs, streamResult);
-                configProperties.setFileLink(resultFile.toString());
-                writeAttribute(searchInfo, resultFile);
+                writeAttribute(searchInfo, file);
                 logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
                 return;
             }
@@ -101,8 +100,7 @@ public class FileGenerate {
             Transformer transformer = transformerFactory.newTransformer(xslt);
             transformer.transform(xml, streamResult);
 
-            configProperties.setFileLink(resultFile.toString());
-            writeAttribute(searchInfo, resultFile);
+            writeAttribute(searchInfo, file);
 
             logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
         } catch (Exception e) {
@@ -152,7 +150,7 @@ public class FileGenerate {
         }
     }
 
-    private File generateUniqueFile(FileExtension fileExtension) {
+    public File generateUniqueFile(FileExtension fileExtension) {
         String extension = "." + fileExtension.value().toLowerCase();
         File dir = Paths.get(configProperties.getPath()).toFile();
 
@@ -164,6 +162,7 @@ public class FileGenerate {
             num++;
             file = new File(dir, uniqueName + "_" + num + extension);
         }
+        configProperties.setFileLink(file.toString());
 
         return file;
     }

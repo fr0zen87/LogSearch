@@ -8,7 +8,10 @@ import com.example.logsearch.entities.SearchInfoResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
 
 @Service
 public class LogServiceImpl implements LogService {
@@ -30,7 +33,8 @@ public class LogServiceImpl implements LogService {
     public SearchInfoResult logSearch(SearchInfo searchInfo) {
         if (searchInfo.isRealization()) {
             if (!fileSearch(searchInfo)) {
-                fileGenerate(searchInfo);
+                File file = fileGenerate.generateUniqueFile(searchInfo.getFileExtension());
+                fileGenerate(searchInfo, file);
             }
             return null;
         }
@@ -43,18 +47,8 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void fileGenerate(SearchInfo searchInfo) {
-        fileGenerate.fileGenerate(searchInfo);
+    @Async
+    public void fileGenerate(SearchInfo searchInfo, File file) {
+        fileGenerate.fileGenerate(searchInfo, file);
     }
-
-//    @Async
-//    public CompletableFuture<Boolean> fileSearchh(SearchInfo searchInfo) {
-//        return CompletableFuture.completedFuture(search.fileSearch(searchInfo));
-//    }
-//
-//    @Async
-//    public CompletableFuture<String> fileGeneratee(SearchInfo searchInfo) {
-//        search.fileGenerate(searchInfo);
-//        return null;
-//    }
 }
