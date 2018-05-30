@@ -6,7 +6,7 @@ import com.example.logsearch.entities.SearchInfoResult;
 import com.example.logsearch.entities.SignificantDateInterval;
 import com.example.logsearch.service.LogService;
 import com.example.logsearch.utils.ConfigProperties;
-import com.example.logsearch.utils.WebSearchInfoValidator;
+import com.example.logsearch.utils.validators.WebSearchInfoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -49,6 +49,7 @@ public class WebLogSearchController {
     @GetMapping(value = "/logSearch")
     public String logSearch(Model model) {
         SearchInfo searchInfo = new SearchInfo();
+        searchInfo.getDateIntervals().add(new SignificantDateInterval());
         model.addAttribute(searchInfo);
         return "logSearch";
     }
@@ -57,7 +58,6 @@ public class WebLogSearchController {
     public ModelAndView logSearch(@Valid SearchInfo searchInfo, BindingResult bindingResult) {
         ModelAndView modelAndView = new ModelAndView();
         if (bindingResult.hasErrors()) {
-            modelAndView.addObject(new SearchInfo());
             return modelAndView;
         }
         SearchInfoResult searchInfoResult = logService.logSearch(searchInfo);

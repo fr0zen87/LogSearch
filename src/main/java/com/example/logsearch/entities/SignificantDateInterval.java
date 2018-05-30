@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import com.example.logsearch.utils.LocalDateTimeAdapter;
+import com.example.logsearch.utils.formatters.LocalDateTimeAdapter;
 
 
 /**

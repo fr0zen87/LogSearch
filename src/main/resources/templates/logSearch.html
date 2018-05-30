@@ -18,7 +18,8 @@
     </div>
 
     <div>
-        <form action="#" th:action="@{/logSearch}" th:object="${searchInfo}" method="post">
+        <form class="needs-validation" novalidate action="#" th:action="@{/logSearch}" th:object="${searchInfo}"
+              method="post">
 
             <h3><label class="label label-primary" th:text="#{regex}">Введите регулярное выражение</label></h3>
             <input type="text" th:field="*{regularExpression}"><br>

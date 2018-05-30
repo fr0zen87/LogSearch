@@ -1,6 +1,6 @@
 package com.example.logsearch;
 
-import com.example.logsearch.utils.LocalDateTimeFormatter;
+import com.example.logsearch.utils.formatters.LocalDateTimeFormatter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;

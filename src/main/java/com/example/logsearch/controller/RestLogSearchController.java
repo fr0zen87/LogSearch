@@ -4,7 +4,7 @@ import com.example.logsearch.entities.SearchInfoResult;
 import com.example.logsearch.service.LogService;
 import com.example.logsearch.entities.SearchInfo;
 import com.example.logsearch.utils.ConfigProperties;
-import com.example.logsearch.utils.SearchInfoValidator;
+import com.example.logsearch.utils.validators.SearchInfoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

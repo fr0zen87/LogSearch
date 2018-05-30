@@ -5,7 +5,7 @@
                xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <jaxb:globalBindings>
-        <xjc:javaType adapter="com.example.logsearch.utils.LocalDateTimeAdapter"
+        <xjc:javaType adapter="com.example.logsearch.utils.formatters.LocalDateTimeAdapter"
                       name="java.time.LocalDateTime" xmlType="xs:dateTime"/>
     </jaxb:globalBindings>
 </jaxb:bindings>

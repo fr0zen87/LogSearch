@@ -1,4 +1,4 @@
-package com.example.logsearch.utils;
+package com.example.logsearch.entities;
 
 public enum CorrectionCheckResult {
     ERROR1(1, "DateFrom exceeds DateTo", "Нижняя граница превосходит верхнюю"),

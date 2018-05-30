@@ -1,4 +1,4 @@
-package com.example.logsearch.utils;
+package com.example.logsearch.utils.formatters;
 
 import org.springframework.format.Formatter;
 

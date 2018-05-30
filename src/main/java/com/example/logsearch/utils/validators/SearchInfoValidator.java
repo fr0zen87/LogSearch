@@ -1,5 +1,6 @@
-package com.example.logsearch.utils;
+package com.example.logsearch.utils.validators;
 
+import com.example.logsearch.entities.CorrectionCheckResult;
 import com.example.logsearch.entities.SearchInfo;
 import com.example.logsearch.entities.SearchInfoResult;
 import com.example.logsearch.entities.SignificantDateInterval;
