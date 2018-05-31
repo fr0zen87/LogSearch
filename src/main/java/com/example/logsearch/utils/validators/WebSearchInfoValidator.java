@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+import static com.example.logsearch.entities.CorrectionCheckResult.ERROR44;
+
 public class WebSearchInfoValidator implements Validator {
 
     @Override
@@ -30,7 +32,7 @@ public class WebSearchInfoValidator implements Validator {
         Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
         Path path = Paths.get(defaultPath.toString(), searchInfo.getLocation());
         if (!Files.exists(path)) {
-            errors.rejectValue("location", String.valueOf(CorrectionCheckResult.ERROR44.getErrorCode()), CorrectionCheckResult.ERROR44.getErrorMessage());
+            errors.rejectValue("location", String.valueOf(ERROR44.getErrorCode()), ERROR44.getErrorMessage());
         }
 
         if (searchInfo.getRegularExpression() == null || searchInfo.getDateIntervals() == null) {

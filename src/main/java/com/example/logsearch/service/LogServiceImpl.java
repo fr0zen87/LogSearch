@@ -16,7 +16,7 @@ import java.io.File;
 @Service
 public class LogServiceImpl implements LogService {
 
-    Logger logger = LoggerFactory.getLogger(LogServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(LogServiceImpl.class);
 
     private final LogsSearch search;
     private final FileSearch fileSearch;

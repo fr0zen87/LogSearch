@@ -23,6 +23,16 @@ public class Logs {
 
     protected String application;
 
+    public Logs() {
+    }
+
+    public Logs(String creator, SearchInfo searchInfo, SearchInfoResult searchInfoResult, String application) {
+        this.creator = creator;
+        this.searchInfo = searchInfo;
+        this.searchInfoResult = searchInfoResult;
+        this.application = application;
+    }
+
     public String getCreator() {
         return creator;
     }
