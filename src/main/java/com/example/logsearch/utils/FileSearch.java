@@ -88,15 +88,17 @@ public class FileSearch {
         for (SignificantDateInterval currentInterval : currentIntervals) {
             boolean check = false;
             for (SignificantDateInterval fileInterval : fileIntervals) {
-                if (check) break;
+                if (check) {
+                    break;
+                }
                 if (fileInterval.getDateFrom().isAfter(currentInterval.getDateFrom()) ||
                         fileInterval.getDateTo().isBefore(currentInterval.getDateTo())) {
                     check = false;
                     continue;
                 }
 
-                long currentIntervalDifference = Duration.between(currentInterval.getDateTo(), currentInterval.getDateFrom()).toMillis();
-                long fileIntervalDifference = Duration.between(fileInterval.getDateTo(), fileInterval.getDateFrom()).toMillis();
+                long currentIntervalDifference = Duration.between(currentInterval.getDateTo(), currentInterval.getDateFrom()).toMinutes();
+                long fileIntervalDifference = Duration.between(fileInterval.getDateTo(), fileInterval.getDateFrom()).toMinutes();
 
                 if (fileIntervalDifference / currentIntervalDifference > 1.1) {
                     check = false;

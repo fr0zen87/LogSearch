@@ -1,5 +1,8 @@
 package com.example.logsearch.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,15 +16,17 @@ import javax.xml.bind.annotation.XmlType;
         "application"
 })
 @XmlRootElement(name = "logs")
+@Getter
+@Setter
 public class Logs {
 
-    protected String creator;
+    private String creator;
 
-    protected SearchInfo searchInfo;
+    private SearchInfo searchInfo;
 
-    protected SearchInfoResult searchInfoResult;
+    private SearchInfoResult searchInfoResult;
 
-    protected String application;
+    private String application;
 
     public Logs() {
     }
@@ -30,38 +35,6 @@ public class Logs {
         this.creator = creator;
         this.searchInfo = searchInfo;
         this.searchInfoResult = searchInfoResult;
-        this.application = application;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public SearchInfo getSearchInfo() {
-        return searchInfo;
-    }
-
-    public void setSearchInfo(SearchInfo searchInfo) {
-        this.searchInfo = searchInfo;
-    }
-
-    public SearchInfoResult getSearchInfoResult() {
-        return searchInfoResult;
-    }
-
-    public void setSearchInfoResult(SearchInfoResult searchInfoResult) {
-        this.searchInfoResult = searchInfoResult;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
         this.application = application;
     }
 }

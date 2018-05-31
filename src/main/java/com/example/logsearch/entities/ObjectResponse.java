@@ -1,11 +1,16 @@
 package com.example.logsearch.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "result")
+@Getter
+@Setter
 public class ObjectResponse {
 
     protected String link;
@@ -20,22 +25,6 @@ public class ObjectResponse {
     }
 
     public ObjectResponse(SearchInfoResult searchInfoResult) {
-        this.searchInfoResult = searchInfoResult;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    public SearchInfoResult getSearchInfoResult() {
-        return searchInfoResult;
-    }
-
-    public void setSearchInfoResult(SearchInfoResult searchInfoResult) {
         this.searchInfoResult = searchInfoResult;
     }
 }
