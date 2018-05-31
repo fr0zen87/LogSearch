@@ -53,6 +53,14 @@ public class SearchInfoResult {
     protected String errorMessage;
     protected List<ResultLogs> resultLogs;
 
+    public SearchInfoResult() {
+    }
+
+    public SearchInfoResult(Long errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
+
     /**
      * Gets the value of the emptyResultMessage property.
      * 
