@@ -29,16 +29,4 @@ public enum CorrectionCheckResult {
     public String getErrorComment() {
         return errorComment;
     }
-
-    public void setErrorCode(long errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    public void setErrorComment(String errorComment) {
-        this.errorComment = errorComment;
-    }
 }

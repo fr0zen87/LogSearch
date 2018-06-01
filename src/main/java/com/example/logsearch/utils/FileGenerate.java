@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 @Component
 public class FileGenerate {
@@ -118,7 +119,8 @@ public class FileGenerate {
 
             logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
         } catch (Exception e) {
-            logger.error("Exception raised: " + e.getMessage());
+            e.printStackTrace();
+            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -133,7 +135,8 @@ public class FileGenerate {
 
             transformerFactory.newTransformer(xslt).transform(streamSource, streamResult);
         } catch (Exception e) {
-            logger.error("Exception raised: " + e.getMessage());
+            e.printStackTrace();
+            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -143,7 +146,8 @@ public class FileGenerate {
             objectOutputStream.writeObject(searchInfo);
             Files.setAttribute(resultFile.toPath(), "user:info", byteArrayOutputStream.toByteArray());
         } catch (IOException e) {
-            logger.error("Exception raised: " + e.getMessage());
+            e.printStackTrace();
+            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
         }
     }
 

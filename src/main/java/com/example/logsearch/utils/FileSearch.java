@@ -14,6 +14,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -68,13 +69,15 @@ public class FileSearch {
                             return FileVisitResult.TERMINATE;
                         }
                     } catch (Exception e) {
-                        logger.error("Exception raised: " + e.getMessage());
+                        e.printStackTrace();
+                        logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
         } catch (IOException e) {
-            logger.error("Exception raised: " + e.getMessage());
+            e.printStackTrace();
+            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
         }
 
         logger.info("File search finished in " + (System.currentTimeMillis() - start) + " ms");

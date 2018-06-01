@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -32,14 +33,6 @@ public class LogsSearch {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
         SearchInfoResult searchInfoResult = new SearchInfoResult();
-
-        Path logFilePath;
-        Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
-        if (searchInfo.getLocation() != null) {
-            logFilePath = Paths.get(defaultPath.toString(), searchInfo.getLocation());
-        } else {
-            logFilePath = defaultPath;
-        }
 
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*.log*");
         Pattern accessLogPattern = Pattern.compile("access.log*");
@@ -93,16 +86,18 @@ public class LogsSearch {
                             searchInfoResult.getResultLogs().addAll(resultLogsArray);
                         }
                     } catch (IOException e) {
-                        logger.error("Exception raised: " + e.getMessage());
+                        e.printStackTrace();
+                        logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
                     }
                 }
                 return FileVisitResult.CONTINUE;
             }
         };
         try {
-            Files.walkFileTree(logFilePath, matcherVisitor);
+            Files.walkFileTree(Paths.get(searchInfo.getLocation()), matcherVisitor);
         } catch (IOException e) {
-            logger.error("Exception raised: " + e.getMessage());
+            e.printStackTrace();
+            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
         }
         if (searchInfoResult.getResultLogs().isEmpty()) {
             searchInfoResult.setEmptyResultMessage("No logs found");
