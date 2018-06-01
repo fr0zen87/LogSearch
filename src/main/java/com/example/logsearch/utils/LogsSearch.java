@@ -93,7 +93,7 @@ public class LogsSearch {
                             searchInfoResult.getResultLogs().addAll(resultLogsArray);
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error("Exception raised: " + e.getMessage());
                     }
                 }
                 return FileVisitResult.CONTINUE;
@@ -102,7 +102,7 @@ public class LogsSearch {
         try {
             Files.walkFileTree(logFilePath, matcherVisitor);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Exception raised: " + e.getMessage());
         }
         if (searchInfoResult.getResultLogs().isEmpty()) {
             searchInfoResult.setEmptyResultMessage("No logs found");

@@ -3,6 +3,7 @@ package com.example.logsearch.entities;
 import com.example.logsearch.utils.formatters.LocalDateTimeAdapter;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 })
 @Getter
 @Setter
+@ToString
 public class ResultLogs {
 
     @XmlElement(required = true, type = String.class)

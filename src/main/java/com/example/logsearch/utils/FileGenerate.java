@@ -83,11 +83,15 @@ public class FileGenerate {
             Source streamSource = new StreamSource(inputStream);
             Source xslt = null;
 
+            inputStream.close();
+            outputStream.close();
+
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
             switch (fileExtension) {
                 case "DOC": {
-                    //not implemented yet
+                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/doc.xslt").toFile());
+                    break;
                 }
                 case "LOG": {
                     xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/log.xslt").toFile());
@@ -98,6 +102,7 @@ public class FileGenerate {
                     break;
                 }
                 case "RTF": {
+                    //same as pdf
                 }
                 case "PDF": {
                     saveFile(file, fileExtension, streamSource, transformerFactory);
@@ -113,7 +118,7 @@ public class FileGenerate {
 
             logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception raised: " + e.getMessage());
         }
     }
 
@@ -128,7 +133,7 @@ public class FileGenerate {
 
             transformerFactory.newTransformer(xslt).transform(streamSource, streamResult);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception raised: " + e.getMessage());
         }
     }
 
@@ -138,7 +143,7 @@ public class FileGenerate {
             objectOutputStream.writeObject(searchInfo);
             Files.setAttribute(resultFile.toPath(), "user:info", byteArrayOutputStream.toByteArray());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Exception raised: " + e.getMessage());
         }
     }
 

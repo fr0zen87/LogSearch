@@ -106,7 +106,12 @@
             <version>1.16.22</version>
             <scope>provided</scope>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-core -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-core</artifactId>
+            <version>1.2.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -145,9 +150,6 @@
                     <xjbSources>
                         <xjbSource>${basedir}/src/main/resources/global.xjb</xjbSource>
                     </xjbSources>
-                    <sources>
-                        <source>${basedir}/src/main/resources/SoapLogService.xsd</source>
-                    </sources>
                     <outputDirectory>${basedir}/src/main/java</outputDirectory>
                     <clearOutputDir>false</clearOutputDir>
                 </configuration>

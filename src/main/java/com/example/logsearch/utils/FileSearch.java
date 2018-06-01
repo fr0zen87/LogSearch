@@ -41,7 +41,7 @@ public class FileSearch {
                 Files.createDirectory(path);
                 return false;
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Exception raised: " + e.getMessage());
             }
         }
 
@@ -68,13 +68,13 @@ public class FileSearch {
                             return FileVisitResult.TERMINATE;
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("Exception raised: " + e.getMessage());
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Exception raised: " + e.getMessage());
         }
 
         logger.info("File search finished in " + (System.currentTimeMillis() - start) + " ms");
