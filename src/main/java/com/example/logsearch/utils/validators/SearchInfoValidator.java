@@ -22,8 +22,6 @@ public class SearchInfoValidator {
             return new SearchInfoResult(ERROR3701.getErrorCode(), ERROR3701.getErrorMessage());
         }
 
-
-        //todo rework it
         if (searchInfo.getLocation() == null) {
             searchInfo.setLocation("");
         }
@@ -31,8 +29,6 @@ public class SearchInfoValidator {
         Path path = Paths.get(defaultPath.toString(), searchInfo.getLocation());
         if (!Files.exists(path)) {
             return new SearchInfoResult(ERROR44.getErrorCode(), ERROR44.getErrorMessage());
-        } else {
-            searchInfo.setLocation(path.toString());
         }
 
         if (searchInfo.getRegularExpression() == null || searchInfo.getDateIntervals() == null) {

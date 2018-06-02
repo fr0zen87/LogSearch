@@ -4,6 +4,7 @@ import com.example.logsearch.entities.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,6 @@ public class SearchInfoValidatorTest {
 
     @Before
     public void init() {
-
         searchInfo.setRegularExpression("");
         searchInfo.setFileExtension(FileExtension.DOC);
         searchInfo.setLocation("");
@@ -45,7 +45,6 @@ public class SearchInfoValidatorTest {
         assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
     }
 
-    //todo failing
     @Test
     public void fileExtensionWithoutRealizationTest() {
         searchInfo.setRealization(false);
@@ -71,16 +70,19 @@ public class SearchInfoValidatorTest {
 
     @Test
     public void locationTest() {
-        searchInfo.setLocation("IdeaProjects");
+        String existsPath = Paths.get(System.getProperty("user.dir")).getParent().getFileName().toString();
+        String notExistsPath = "notExists";
+
+        searchInfo.setLocation(existsPath);
         assertNull(validator.validate(searchInfo));
 
-        searchInfo.setLocation("\\IdeaProjects");
+        searchInfo.setLocation("\\" + existsPath);
         assertNull(validator.validate(searchInfo));
 
-        searchInfo.setLocation("/IdeaProjects");
+        searchInfo.setLocation("/" + existsPath);
         assertNull(validator.validate(searchInfo));
 
-        searchInfo.setLocation("notIdeaProjects");
+        searchInfo.setLocation(notExistsPath);
         expected = new SearchInfoResult(ERROR44.getErrorCode(), ERROR44.getErrorMessage());
         SearchInfoResult actual = validator.validate(searchInfo);
         assertEquals(expected.getErrorCode(), actual.getErrorCode());

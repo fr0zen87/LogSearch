@@ -94,7 +94,9 @@ public class LogsSearch {
             }
         };
         try {
-            Files.walkFileTree(Paths.get(searchInfo.getLocation()), matcherVisitor);
+            Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
+            Path searchPath = Paths.get(defaultPath.toString(), searchInfo.getLocation());
+            Files.walkFileTree(searchPath, matcherVisitor);
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
