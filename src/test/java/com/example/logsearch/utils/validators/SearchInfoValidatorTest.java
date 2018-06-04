@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,5 +91,44 @@ public class SearchInfoValidatorTest {
 
         searchInfo.setLocation(null);
         assertNull(validator.validate(searchInfo));
+    }
+
+    @Test
+    public void nullDateIntervalTest() {
+        searchInfo.setDateIntervals(null);
+
+        expected = new SearchInfoResult(ERROR37.getErrorCode(), ERROR37.getErrorMessage());
+        SearchInfoResult actual = validator.validate(searchInfo);
+        assertEquals(expected.getErrorCode(), actual.getErrorCode());
+        assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
+    }
+
+    @Test
+    public void exceedsPresentTimeTest() {
+        List<SignificantDateInterval> intervals = new ArrayList<>();
+        SignificantDateInterval interval = new SignificantDateInterval();
+        interval.setDateFrom(LocalDateTime.MAX);
+        intervals.add(interval);
+        searchInfo.setDateIntervals(intervals);
+
+        expected = new SearchInfoResult(ERROR18.getErrorCode(), ERROR18.getErrorMessage());
+        SearchInfoResult actual = validator.validate(searchInfo);
+        assertEquals(expected.getErrorCode(), actual.getErrorCode());
+        assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
+    }
+
+    @Test
+    public void exceedsDateTo() {
+        List<SignificantDateInterval> intervals = new ArrayList<>();
+        SignificantDateInterval interval = new SignificantDateInterval();
+        interval.setDateFrom(LocalDateTime.parse("2018-05-09T10:15:30"));
+        interval.setDateTo(LocalDateTime.parse("2018-01-09T10:15:30"));
+        intervals.add(interval);
+        searchInfo.setDateIntervals(intervals);
+
+        expected = new SearchInfoResult(ERROR1.getErrorCode(), ERROR1.getErrorMessage());
+        SearchInfoResult actual = validator.validate(searchInfo);
+        assertEquals(expected.getErrorCode(), actual.getErrorCode());
+        assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
     }
 }

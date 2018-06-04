@@ -1,5 +1,7 @@
 package com.example.logsearch.utils;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -9,25 +11,17 @@ import org.springframework.context.annotation.PropertySource;
 @ConfigurationProperties(prefix = "logs")
 @PropertySource("classpath:props.properties")
 @EnableConfigurationProperties(value = ConfigProperties.class)
+@Getter
+@Setter
 public class ConfigProperties {
 
     private String path;
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
     private String fileLink;
 
-    public String getFileLink() {
-        return fileLink;
-    }
+    private int deletionInterval;
 
-    public void setFileLink(String fileLink) {
-        this.fileLink = fileLink;
-    }
+    private int fileExistTime;
+
+    private int threadsNumber;
 }
