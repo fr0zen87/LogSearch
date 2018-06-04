@@ -60,6 +60,8 @@ public class FileSearch {
                         ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
                         SearchInfo fileSearchInfo = (SearchInfo) objectInputStream.readObject();
 
+                        objectInputStream.close();
+
                         if (searchInfo.getRegularExpression().equals(fileSearchInfo.getRegularExpression()) &&
                                 searchInfo.getFileExtension().value().equals(fileSearchInfo.getFileExtension().value()) &&
                                 searchInfo.getLocation().equals(fileSearchInfo.getLocation()) &&
@@ -89,14 +91,9 @@ public class FileSearch {
                                  List<SignificantDateInterval> fileIntervals) {
         int count = 0;
         for (SignificantDateInterval currentInterval : currentIntervals) {
-            boolean check = false;
             for (SignificantDateInterval fileInterval : fileIntervals) {
-                if (check) {
-                    break;
-                }
                 if (fileInterval.getDateFrom().isAfter(currentInterval.getDateFrom()) ||
                         fileInterval.getDateTo().isBefore(currentInterval.getDateTo())) {
-                    check = false;
                     continue;
                 }
 
@@ -104,13 +101,10 @@ public class FileSearch {
                 long fileIntervalDifference = Duration.between(fileInterval.getDateTo(), fileInterval.getDateFrom()).toMinutes();
 
                 if (fileIntervalDifference / currentIntervalDifference > 1.1) {
-                    check = false;
                     continue;
                 }
-                check = true;
-            }
-            if (check) {
                 count++;
+                break;
             }
         }
         return count == currentIntervals.size();

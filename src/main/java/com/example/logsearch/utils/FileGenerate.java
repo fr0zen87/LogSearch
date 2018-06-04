@@ -58,16 +58,7 @@ public class FileGenerate {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
             String fileExtension = searchInfo.getFileExtension().value();
-            Result streamResult = null;
-//            if (fileExtension.equals("PDF") || fileExtension.equals("RTF") || fileExtension.equals("DOC")) {
-//                Path tempFile = Files.createTempFile(Paths.get(configProperties.getPath()), "temp", ".xml");
-//                marshaller.marshal(logs, tempFile.toFile());
-//                createReport(tempFile, fileExtension, file);
-//                Files.delete(tempFile);
-//                writeAttribute(searchInfo, file);
-//                logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
-//                return;
-//            }
+            Result streamResult;
 
             if (fileExtension.equals("XML")) {
                 streamResult = new StreamResult(file.toString());
@@ -167,39 +158,4 @@ public class FileGenerate {
 
         return file;
     }
-
-//    private void createReport(Path tempFile, String fileExtension, File file) {
-//        try {
-//            JRXmlDataSource dataSource = new JRXmlDataSource(tempFile.toFile());
-//
-//            File styleSheet = new File("src/main/resources/jrxml/report_style.jrxml");
-//            JasperDesign jasperDesign = JRXmlLoader.load(styleSheet);
-//            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
-//            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
-//
-//            switch (fileExtension) {
-//                case "PDF" : {
-//                    JasperExportManager.exportReportToPdfFile(jasperPrint, file.toString());
-//                    break;
-//                }
-//                case "RTF" : {
-//                    JRRtfExporter exporter = new JRRtfExporter();
-//                    exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//                    exporter.setExporterOutput(new SimpleWriterExporterOutput(file));
-//                    exporter.exportReport();
-//                    break;
-//                }
-//                case "DOC" : {
-//                    JRDocxExporter exporter = new JRDocxExporter();
-//                    exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//                    exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(file));
-//                    exporter.exportReport();
-//                    break;
-//                }
-//            }
-//
-//        } catch (JRException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }
