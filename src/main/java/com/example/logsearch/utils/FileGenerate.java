@@ -9,6 +9,8 @@ import org.apache.fop.apps.MimeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -32,11 +34,13 @@ public class FileGenerate {
 
     private final ConfigProperties configProperties;
     private final LogsSearch search;
+    private final ResourceLoader resourceLoader;
 
     @Autowired
-    public FileGenerate(ConfigProperties configProperties, LogsSearch search) {
+    public FileGenerate(ConfigProperties configProperties, LogsSearch search, ResourceLoader resourceLoader) {
         this.configProperties = configProperties;
         this.search = search;
+        this.resourceLoader = resourceLoader;
     }
 
     @Async
@@ -79,18 +83,22 @@ public class FileGenerate {
             outputStream.close();
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Resource resource;
 
             switch (fileExtension) {
                 case "DOC": {
-                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/doc.xslt").toFile());
+                    resource = resourceLoader.getResource("classpath:xsl/doc.xslt");
+                    xslt = new StreamSource(resource.getFile());
                     break;
                 }
                 case "LOG": {
-                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/log.xslt").toFile());
+                    resource = resourceLoader.getResource("classpath:xsl/log.xslt");
+                    xslt = new StreamSource(resource.getFile());
                     break;
                 }
                 case "HTML": {
-                    xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/html.xslt").toFile());
+                    resource = resourceLoader.getResource("classpath:xsl/html.xslt");
+                    xslt = new StreamSource(resource.getFile());
                     break;
                 }
                 case "RTF": {
@@ -117,9 +125,11 @@ public class FileGenerate {
 
     private void saveFile(File file, String fileExtension, Source streamSource, TransformerFactory transformerFactory) {
         try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file))) {
-            Source xslt = new StreamSource(Paths.get("src/main/webapp/WEB-INF/xsl/pdf.xslt").toFile());
+            Resource resource = resourceLoader.getResource("classpath:xsl/pdf.xslt");
+            Source xslt = new StreamSource(resource.getFile());
 
-            FopFactory fopFactory = FopFactory.newInstance(new File("src/main/resources/fop.xml"));
+            resource = resourceLoader.getResource("classpath:fop.xml");
+            FopFactory fopFactory = FopFactory.newInstance(resource.getFile());
             Fop fop = fileExtension.equals("RTF") ? fopFactory.newFop(MimeConstants.MIME_RTF, out) :
                     fopFactory.newFop(MimeConstants.MIME_PDF, out);
             Result streamResult = new SAXResult(fop.getDefaultHandler());

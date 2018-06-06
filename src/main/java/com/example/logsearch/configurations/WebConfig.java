@@ -1,4 +1,4 @@
-package com.example.logsearch;
+package com.example.logsearch.configurations;
 
 import com.example.logsearch.utils.formatters.LocalDateTimeFormatter;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-import org.springframework.web.servlet.view.xslt.XsltViewResolver;
 
 import java.util.Locale;
 
@@ -28,14 +27,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addFormatter(dateTimeFormatter());
-    }
-
-    @Bean
-    public XsltViewResolver xsltViewResolver() {
-        XsltViewResolver viewResolver = new XsltViewResolver();
-        viewResolver.setPrefix("/WEB-INF/xsl/");
-        viewResolver.setSuffix(".xslt");
-        return viewResolver;
     }
 
     @Bean

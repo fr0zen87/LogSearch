@@ -27,6 +27,9 @@ public class FileRemover {
             String filesDir = configProperties.getPath();
             long fileExistTime = configProperties.getFileExistTime() * 24 * 60 * 60 * 1000;
 
+            if(!Files.exists(Paths.get(filesDir))) {
+                Files.createDirectory(Paths.get(filesDir));
+            }
             Files.list(Paths.get(filesDir))
                     .map(Path::toFile)
                     .filter(file -> (System.currentTimeMillis() - file.lastModified()) > fileExistTime)

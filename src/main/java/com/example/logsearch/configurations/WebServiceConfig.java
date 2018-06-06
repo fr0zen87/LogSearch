@@ -1,4 +1,4 @@
-package com.example.logsearch;
+package com.example.logsearch.configurations;
 
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
