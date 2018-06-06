@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import static com.example.logsearch.entities.CorrectionCheckResult.*;
 
@@ -31,11 +32,16 @@ public class SearchInfoValidator {
             return new SearchInfoResult(ERROR44.getErrorCode(), ERROR44.getErrorMessage());
         }
 
-        if (searchInfo.getRegularExpression() == null || searchInfo.getDateIntervals() == null) {
+        List<SignificantDateInterval> intervals = searchInfo.getDateIntervals();
+
+        if (searchInfo.getRegularExpression() == null || intervals == null) {
             return new SearchInfoResult(ERROR37.getErrorCode(), ERROR37.getErrorMessage());
         }
 
-        for (SignificantDateInterval interval : searchInfo.getDateIntervals()) {
+        if (intervals.isEmpty()) {
+            intervals.add(new SignificantDateInterval(LocalDateTime.MIN, LocalDateTime.MAX));
+        }
+        for (SignificantDateInterval interval : intervals) {
             if (interval.getDateFrom() == null) {
                 interval.setDateFrom(LocalDateTime.MIN);
             }

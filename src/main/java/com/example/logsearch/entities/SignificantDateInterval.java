@@ -1,9 +1,7 @@
 package com.example.logsearch.entities;
 
 import com.example.logsearch.utils.formatters.LocalDateTimeAdapter;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -19,6 +17,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SignificantDateInterval implements Serializable {
 
     private static final long serialVersionUID = 1L;

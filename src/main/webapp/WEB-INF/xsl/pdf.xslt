@@ -12,17 +12,17 @@
                 </fo:simple-page-master>
             </fo:layout-master-set>
             <fo:page-sequence master-reference="A4-portrait">
-                <fo:static-content flow-name="xsl-region-after">
+                <fo:static-content flow-name="xsl-region-after" font-family="Arial">
                     <fo:block id="end-of-document">
-                        <fo:block display-align="before" space-before="6mm">Page
+                        <fo:block font-size="6px" space-before="6mm" text-align="right">Page
                             <fo:page-number/>
                         </fo:block>
-                        <fo:block font-size="8px">
+                        <fo:block font-size="6px">
                             <xsl:value-of select="ns:logs/ns:application"/>
                         </fo:block>
                     </fo:block>
                 </fo:static-content>
-                <fo:flow flow-name="xsl-region-body">
+                <fo:flow flow-name="xsl-region-body" font-family="Arial">
                     <fo:block margin-bottom="10mm">
                         Created by:
                         <xsl:value-of select="ns:logs/ns:creator"/>
