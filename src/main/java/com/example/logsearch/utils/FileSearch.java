@@ -20,6 +20,8 @@ import java.util.List;
 @Component
 public class FileSearch {
 
+    private static final String EXCEPTION = "Exception raised: {}";
+
     private final Logger logger = LoggerFactory.getLogger(FileSearch.class);
 
     private boolean isFileFound;
@@ -37,12 +39,11 @@ public class FileSearch {
 
         isFileFound = false;
         Path path = Paths.get(configProperties.getPath());
-        if (!Files.exists(path)) {
+        if (!path.toFile().exists()) {
             try {
                 Files.createDirectory(path);
-                return false;
             } catch (IOException e) {
-                logger.error("Exception raised: " + e.getMessage());
+                logger.error(EXCEPTION, e.getMessage());
             }
         }
 
@@ -71,18 +72,16 @@ public class FileSearch {
                             return FileVisitResult.TERMINATE;
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
+                        logger.error(EXCEPTION, Arrays.toString(e.getStackTrace()));
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
-            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
+            logger.error(EXCEPTION, Arrays.toString(e.getStackTrace()));
         }
 
-        logger.info("File search finished in " + (System.currentTimeMillis() - start) + " ms");
+        logger.info("File search finished in {} ms", (System.currentTimeMillis() - start));
 
         return isFileFound;
     }
@@ -92,19 +91,17 @@ public class FileSearch {
         int count = 0;
         for (SignificantDateInterval currentInterval : currentIntervals) {
             for (SignificantDateInterval fileInterval : fileIntervals) {
-                if (fileInterval.getDateFrom().isAfter(currentInterval.getDateFrom()) ||
-                        fileInterval.getDateTo().isBefore(currentInterval.getDateTo())) {
-                    continue;
-                }
+                if (!fileInterval.getDateFrom().isAfter(currentInterval.getDateFrom()) ||
+                        !fileInterval.getDateTo().isBefore(currentInterval.getDateTo())) {
 
-                long currentIntervalDifference = Duration.between(currentInterval.getDateTo(), currentInterval.getDateFrom()).toMinutes();
-                long fileIntervalDifference = Duration.between(fileInterval.getDateTo(), fileInterval.getDateFrom()).toMinutes();
+                    long currentIntervalDifference = Duration.between(currentInterval.getDateTo(), currentInterval.getDateFrom()).toMinutes();
+                    long fileIntervalDifference = Duration.between(fileInterval.getDateTo(), fileInterval.getDateFrom()).toMinutes();
 
-                if (fileIntervalDifference / currentIntervalDifference > 1.1) {
-                    continue;
+                    if (fileIntervalDifference / currentIntervalDifference <= 1.1) {
+                        count++;
+                        break;
+                    }
                 }
-                count++;
-                break;
             }
         }
         return count == currentIntervals.size();

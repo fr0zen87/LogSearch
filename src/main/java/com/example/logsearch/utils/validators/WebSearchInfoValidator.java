@@ -5,7 +5,6 @@ import com.example.logsearch.entities.SignificantDateInterval;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -30,7 +29,7 @@ public class WebSearchInfoValidator implements Validator {
 
         Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
         Path path = Paths.get(defaultPath.toString(), searchInfo.getLocation());
-        if (!Files.exists(path)) {
+        if (!path.toFile().exists()) {
             errors.rejectValue("location", ERROR44.getErrorMessage());
         }
 
@@ -39,6 +38,10 @@ public class WebSearchInfoValidator implements Validator {
         }
 
         List<SignificantDateInterval> intervals = searchInfo.getDateIntervals();
+        checkDateIntervals(errors, intervals);
+    }
+
+    private void checkDateIntervals(Errors errors, List<SignificantDateInterval> intervals) {
         if (intervals.isEmpty()) {
             intervals.add(new SignificantDateInterval(LocalDateTime.MIN, LocalDateTime.MAX));
         }

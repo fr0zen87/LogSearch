@@ -24,6 +24,8 @@ import java.util.List;
 @Controller
 public class WebLogSearchController {
 
+    private static final String LOG_SEARCH = "logSearch";
+
     private final LogService logService;
     private final ConfigProperties configProperties;
 
@@ -51,7 +53,7 @@ public class WebLogSearchController {
         SearchInfo searchInfo = new SearchInfo();
         searchInfo.getDateIntervals().add(new SignificantDateInterval());
         model.addAttribute(searchInfo);
-        return "logSearch";
+        return LOG_SEARCH;
     }
 
     @PostMapping(value = "/logSearch")
@@ -75,13 +77,13 @@ public class WebLogSearchController {
     @RequestMapping(value="/logSearch", params={"addRow"})
     public String addRow(final SearchInfo searchInfo, final BindingResult bindingResult) {
         searchInfo.getDateIntervals().add(new SignificantDateInterval());
-        return "logSearch";
+        return LOG_SEARCH;
     }
 
     @RequestMapping(value="/logSearch", params={"removeRow"})
     public String removeRow(final SearchInfo searchInfo, final BindingResult bindingResult, final HttpServletRequest req) {
-        final Integer rowId = Integer.valueOf(req.getParameter("removeRow"));
-        searchInfo.getDateIntervals().remove(rowId.intValue());
-        return "logSearch";
+        final int rowId = Integer.parseInt(req.getParameter("removeRow"));
+        searchInfo.getDateIntervals().remove(rowId);
+        return LOG_SEARCH;
     }
 }

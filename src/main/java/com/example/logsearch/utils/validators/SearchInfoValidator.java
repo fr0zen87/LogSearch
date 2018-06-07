@@ -5,7 +5,6 @@ import com.example.logsearch.entities.SearchInfoResult;
 import com.example.logsearch.entities.SignificantDateInterval;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -23,21 +22,30 @@ public class SearchInfoValidator {
             return new SearchInfoResult(ERROR3701.getErrorCode(), ERROR3701.getErrorMessage());
         }
 
-        if (searchInfo.getLocation() == null) {
-            searchInfo.setLocation("");
+        Path domainPath = Paths.get(System.getProperty("user.dir"));
+        while (!domainPath.endsWith("domains")) {
+            domainPath = domainPath.getParent();
         }
-        Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
-        Path path = Paths.get(defaultPath.toString(), searchInfo.getLocation());
-        if (!Files.exists(path)) {
-            return new SearchInfoResult(ERROR44.getErrorCode(), ERROR44.getErrorMessage());
+        if (searchInfo.getLocation() == null) {
+            searchInfo.setLocation(String.valueOf(domainPath));
+        } else {
+            Path locationPath = Paths.get(String.valueOf(domainPath), searchInfo.getLocation());
+            if (!locationPath.toFile().exists()) {
+                return new SearchInfoResult(ERROR44.getErrorCode(), ERROR44.getErrorMessage());
+            }
+            searchInfo.setLocation(String.valueOf(locationPath));
+        }
+
+        if (searchInfo.getRegularExpression() == null || searchInfo.getDateIntervals() == null) {
+            return new SearchInfoResult(ERROR37.getErrorCode(), ERROR37.getErrorMessage());
         }
 
         List<SignificantDateInterval> intervals = searchInfo.getDateIntervals();
 
-        if (searchInfo.getRegularExpression() == null || intervals == null) {
-            return new SearchInfoResult(ERROR37.getErrorCode(), ERROR37.getErrorMessage());
-        }
+        return getSearchInfoResult(intervals);
+    }
 
+    private SearchInfoResult getSearchInfoResult(List<SignificantDateInterval> intervals) {
         if (intervals.isEmpty()) {
             intervals.add(new SignificantDateInterval(LocalDateTime.MIN, LocalDateTime.MAX));
         }

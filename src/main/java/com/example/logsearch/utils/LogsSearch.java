@@ -39,7 +39,7 @@ public class LogsSearch {
 
         FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
             @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attr) throws IOException {
                 Path name = file.getFileName();
 
                 if (accessLogPattern.matcher(name.toString()).find()) {
@@ -47,59 +47,20 @@ public class LogsSearch {
                 }
 
                 if (matcher.matches(name) && checkFileCreationTime(attr, dateInterval)) {
-                    try {
-                        StringBuilder sb = new StringBuilder();
-                        List<String> fileLines = new ArrayList<>();
-                        for (String line : Files.readAllLines(file, StandardCharsets.ISO_8859_1)) {
-                            if (!line.trim().endsWith(">")) {
-                                sb = sb.length() == 0 ? sb.append(line) : sb.append(", ").append(line);
-                            } else {
-                                sb.append(line.trim());
-                                fileLines.add(sb.toString());
-                                sb = new StringBuilder();
-                            }
-                        }
-                        List<ResultLogs> resultLogsArray = fileLines.stream()
-                                .parallel()
-                                .filter(Pattern.compile(searchInfo.getRegularExpression()).asPredicate())
-                                .map(line -> {
-                                    LocalDateTime parsedDate = LocalDateTime.parse(line.substring(5, 24), formatter);
-                                    ResultLogs resultLogs = new ResultLogs();
-
-                                    for (SignificantDateInterval interval : dateInterval) {
-                                        if ((parsedDate.isAfter(interval.getDateFrom())
-                                                || parsedDate.isEqual(interval.getDateFrom()))
-                                                && parsedDate.isBefore(interval.getDateTo())
-                                                ) {
-                                            String content = line.substring(34);
-
-                                            resultLogs.setTimeMoment(parsedDate);
-                                            resultLogs.setContent(content);
-                                            resultLogs.setFileName(file.toString());
-                                        }
-                                    }
-                                    return resultLogs;
-                                })
-                                .filter(log -> log.getFileName() != null)
-                                .collect(Collectors.toList());
-                        if (!resultLogsArray.isEmpty()) {
-                            searchInfoResult.getResultLogs().addAll(resultLogsArray);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
+                    List<String> fileLines = getFileLines(file);
+                    List<ResultLogs> resultLogsArray = getResultLogsList(file, fileLines, searchInfo, formatter, dateInterval);
+                    if (!resultLogsArray.isEmpty()) {
+                        searchInfoResult.getResultLogs().addAll(resultLogsArray);
                     }
                 }
                 return FileVisitResult.CONTINUE;
             }
         };
         try {
-            Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
-            Path searchPath = Paths.get(defaultPath.toString(), searchInfo.getLocation());
-            Files.walkFileTree(searchPath, matcherVisitor);
+            Path locationPath = Paths.get(searchInfo.getLocation());
+            Files.walkFileTree(locationPath, matcherVisitor);
         } catch (IOException e) {
-            e.printStackTrace();
-            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
+            logger.error("Exception raised: {}", Arrays.toString(e.getStackTrace()));
         }
         if (searchInfoResult.getResultLogs().isEmpty()) {
             searchInfoResult.setEmptyResultMessage("No logs found");
@@ -107,9 +68,54 @@ public class LogsSearch {
             searchInfoResult.getResultLogs().sort(Comparator.comparing(ResultLogs::getTimeMoment));
         }
 
-        logger.info("Logs search finished in " + (System.currentTimeMillis() - start) + " ms");
+        logger.info("Logs search finished in {} ms", (System.currentTimeMillis() - start));
 
         return searchInfoResult;
+    }
+
+    private List<ResultLogs> getResultLogsList(Path file,
+                                               List<String> fileLines,
+                                               SearchInfo searchInfo,
+                                               DateTimeFormatter formatter,
+                                               List<SignificantDateInterval> dateInterval) {
+        return fileLines.stream()
+                .parallel()
+                .filter(Pattern.compile(searchInfo.getRegularExpression()).asPredicate())
+                .map(line -> {
+                    LocalDateTime parsedDate = LocalDateTime.parse(line.substring(5, 24), formatter);
+                    ResultLogs resultLogs = new ResultLogs();
+
+                    for (SignificantDateInterval interval : dateInterval) {
+                        if ((parsedDate.isAfter(interval.getDateFrom())
+                                || parsedDate.isEqual(interval.getDateFrom()))
+                                && parsedDate.isBefore(interval.getDateTo())
+                                ) {
+                            String content = line.substring(34);
+
+                            resultLogs.setTimeMoment(parsedDate);
+                            resultLogs.setContent(content);
+                            resultLogs.setFileName(file.toString());
+                        }
+                    }
+                    return resultLogs;
+                })
+                .filter(log -> log.getFileName() != null)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getFileLines(Path file) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        List<String> fileLines = new ArrayList<>();
+        for (String line : Files.readAllLines(file, StandardCharsets.ISO_8859_1)) {
+            if (!line.trim().endsWith(">")) {
+                sb = sb.length() == 0 ? sb.append(line) : sb.append(", ").append(line);
+            } else {
+                sb.append(line.trim());
+                fileLines.add(sb.toString());
+                sb = new StringBuilder();
+            }
+        }
+        return fileLines;
     }
 
     private boolean checkFileCreationTime(BasicFileAttributes attr, List<SignificantDateInterval> dateInterval) {

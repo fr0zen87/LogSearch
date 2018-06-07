@@ -30,6 +30,8 @@ import java.util.Arrays;
 @Component
 public class FileGenerate {
 
+    private static final String EXCEPTION = "Exception raised: {}";
+
     private final Logger logger = LoggerFactory.getLogger(FileGenerate.class);
 
     private final ConfigProperties configProperties;
@@ -46,7 +48,7 @@ public class FileGenerate {
     @Async
     public void fileGenerate(SearchInfo searchInfo, File file) {
 
-        logger.info("Starting " + searchInfo.getFileExtension().value() + " file generation");
+        logger.info("Starting file generation");
         long start = System.currentTimeMillis();
 
         try {
@@ -64,20 +66,12 @@ public class FileGenerate {
             String fileExtension = searchInfo.getFileExtension().value();
             Result streamResult;
 
-            if (fileExtension.equals("XML")) {
-                streamResult = new StreamResult(file.toString());
-                marshaller.marshal(logs, streamResult);
-                writeAttribute(searchInfo, file);
-                logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
-                return;
-            }
-
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             marshaller.marshal(logs, outputStream);
             InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 
             Source streamSource = new StreamSource(inputStream);
-            Source xslt = null;
+            Source xslt;
 
             inputStream.close();
             outputStream.close();
@@ -86,6 +80,11 @@ public class FileGenerate {
             Resource resource;
 
             switch (fileExtension) {
+                case "XML": {
+                    resource = resourceLoader.getResource("classpath:xsl/xml.xslt");
+                    xslt = new StreamSource(resource.getFile());
+                    break;
+                }
                 case "DOC": {
                     resource = resourceLoader.getResource("classpath:xsl/doc.xslt");
                     xslt = new StreamSource(resource.getFile());
@@ -101,13 +100,10 @@ public class FileGenerate {
                     xslt = new StreamSource(resource.getFile());
                     break;
                 }
-                case "RTF": {
-                    //same as pdf
-                }
-                case "PDF": {
+                default: {
                     saveFile(file, fileExtension, streamSource, transformerFactory);
                     writeAttribute(searchInfo, file);
-                    logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
+                    logger.info("File generated in {} ms", (System.currentTimeMillis() - start));
                     return;
                 }
             }
@@ -116,10 +112,9 @@ public class FileGenerate {
             transformerFactory.newTransformer(xslt).transform(streamSource, streamResult);
             writeAttribute(searchInfo, file);
 
-            logger.info("File generated in " + (System.currentTimeMillis() - start) + " ms");
+            logger.info("File generated in {} ms", (System.currentTimeMillis() - start));
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
+            logger.error(EXCEPTION, Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -136,8 +131,7 @@ public class FileGenerate {
 
             transformerFactory.newTransformer(xslt).transform(streamSource, streamResult);
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
+            logger.error(EXCEPTION, Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -147,8 +141,7 @@ public class FileGenerate {
             objectOutputStream.writeObject(searchInfo);
             Files.setAttribute(resultFile.toPath(), "user:info", byteArrayOutputStream.toByteArray());
         } catch (IOException e) {
-            e.printStackTrace();
-            logger.error("Exception raised: " + Arrays.toString(e.getStackTrace()));
+            logger.error(EXCEPTION, Arrays.toString(e.getStackTrace()));
         }
     }
 

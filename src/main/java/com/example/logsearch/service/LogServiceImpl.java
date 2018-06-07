@@ -31,13 +31,13 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public SearchInfoResult logSearch(SearchInfo searchInfo) {
-        logger.info("Log service incoming data: " + searchInfo);
+        logger.info("Log service incoming data: {}", searchInfo);
         if (searchInfo.isRealization()) {
             boolean isFileFound = fileSearch(searchInfo);
             if (!isFileFound) {
                 File file = fileGenerate.generateUniqueFile(searchInfo.getFileExtension());
                 fileGenerate(searchInfo, file);
-                logger.info("Generated result file: " + file.toString());
+                logger.info("Generated result file: {}", file);
             }
             return null;
         }

@@ -32,7 +32,7 @@ public class RestLogSearchController {
     }
 
     @PostMapping("/restLogSearch")
-    public ResponseEntity<?> logSearch(@RequestBody SearchInfo searchInfo) {
+    public ResponseEntity<Object> logSearch(@RequestBody SearchInfo searchInfo) {
         SearchInfoResult searchInfoResult = validator.validate(searchInfo);
         if (searchInfoResult != null) {
             return ResponseEntity.badRequest().body(searchInfoResult);
