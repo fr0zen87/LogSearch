@@ -91,7 +91,7 @@ public class FileSearch {
         int count = 0;
         for (SignificantDateInterval currentInterval : currentIntervals) {
             for (SignificantDateInterval fileInterval : fileIntervals) {
-                if (!fileInterval.getDateFrom().isAfter(currentInterval.getDateFrom()) ||
+                if (!fileInterval.getDateFrom().isAfter(currentInterval.getDateFrom()) &&
                         !fileInterval.getDateTo().isBefore(currentInterval.getDateTo())) {
 
                     long currentIntervalDifference = Duration.between(currentInterval.getDateTo(), currentInterval.getDateFrom()).toMinutes();

@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 @Component
 public class FileRemover {
@@ -34,10 +35,11 @@ public class FileRemover {
             if(!Paths.get(filesDir).toFile().exists()) {
                 Files.createDirectory(Paths.get(filesDir));
             }
-            Files.list(Paths.get(filesDir))
-                    .map(Path::toFile)
+            Stream<Path> stream = Files.list(Paths.get(filesDir));
+            stream.map(Path::toFile)
                     .filter(file -> (System.currentTimeMillis() - file.lastModified()) > fileExistTime)
                     .forEach(File::delete);
+            stream.close();
         } catch (IOException e) {
             logger.error("Exception raised: {}", Arrays.toString(e.getStackTrace()));
         }

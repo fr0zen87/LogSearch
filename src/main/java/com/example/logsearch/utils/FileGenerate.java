@@ -63,53 +63,30 @@ public class FileGenerate {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-            String fileExtension = searchInfo.getFileExtension().value();
-            Result streamResult;
-
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             marshaller.marshal(logs, outputStream);
             InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 
             Source streamSource = new StreamSource(inputStream);
-            Source xslt;
 
             inputStream.close();
             outputStream.close();
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Resource resource;
 
-            switch (fileExtension) {
-                case "XML": {
-                    resource = resourceLoader.getResource("classpath:xsl/xml.xslt");
-                    xslt = new StreamSource(resource.getFile());
-                    break;
-                }
-                case "DOC": {
-                    resource = resourceLoader.getResource("classpath:xsl/doc.xslt");
-                    xslt = new StreamSource(resource.getFile());
-                    break;
-                }
-                case "LOG": {
-                    resource = resourceLoader.getResource("classpath:xsl/log.xslt");
-                    xslt = new StreamSource(resource.getFile());
-                    break;
-                }
-                case "HTML": {
-                    resource = resourceLoader.getResource("classpath:xsl/html.xslt");
-                    xslt = new StreamSource(resource.getFile());
-                    break;
-                }
-                default: {
-                    saveFile(file, fileExtension, streamSource, transformerFactory);
-                    writeAttribute(searchInfo, file);
-                    logger.info("File generated in {} ms", (System.currentTimeMillis() - start));
-                    return;
-                }
+            FileExtension fileExtension = searchInfo.getFileExtension();
+            if (fileExtension.value().equalsIgnoreCase("pdf") ||
+                    fileExtension.value().equalsIgnoreCase("rtf")) {
+                savePdfFile(file, fileExtension, streamSource, transformerFactory);
+            } else {
+                String resourcePath = String.format("classpath:xsl/%s.xslt", fileExtension.value().toLowerCase());
+                Resource resource = resourceLoader.getResource(resourcePath);
+                Source xslt = new StreamSource(resource.getFile());
+
+                Result streamResult = new StreamResult(file.toString());
+                transformerFactory.newTransformer(xslt).transform(streamSource, streamResult);
             }
 
-            streamResult = new StreamResult(file.toString());
-            transformerFactory.newTransformer(xslt).transform(streamSource, streamResult);
             writeAttribute(searchInfo, file);
 
             logger.info("File generated in {} ms", (System.currentTimeMillis() - start));
@@ -118,14 +95,18 @@ public class FileGenerate {
         }
     }
 
-    private void saveFile(File file, String fileExtension, Source streamSource, TransformerFactory transformerFactory) {
+    private void savePdfFile(File file,
+                             FileExtension fileExtension,
+                             Source streamSource,
+                             TransformerFactory transformerFactory) {
         try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file))) {
             Resource resource = resourceLoader.getResource("classpath:xsl/pdf.xslt");
             Source xslt = new StreamSource(resource.getFile());
 
             resource = resourceLoader.getResource("classpath:fop.xml");
             FopFactory fopFactory = FopFactory.newInstance(resource.getFile());
-            Fop fop = fileExtension.equals("RTF") ? fopFactory.newFop(MimeConstants.MIME_RTF, out) :
+            Fop fop = fileExtension.value().equalsIgnoreCase("rtf") ?
+                    fopFactory.newFop(MimeConstants.MIME_RTF, out) :
                     fopFactory.newFop(MimeConstants.MIME_PDF, out);
             Result streamResult = new SAXResult(fop.getDefaultHandler());
 

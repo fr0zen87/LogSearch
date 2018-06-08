@@ -30,7 +30,7 @@ public class LogsSearch {
         long start = System.currentTimeMillis();
 
         List<SignificantDateInterval> dateInterval = searchInfo.getDateIntervals();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[dd.MM.yyyy HH:mm:ss][dd.MM.yyyy H:mm:ss]");
 
         SearchInfoResult searchInfoResult = new SearchInfoResult();
 
@@ -82,7 +82,11 @@ public class LogsSearch {
                 .parallel()
                 .filter(Pattern.compile(searchInfo.getRegularExpression()).asPredicate())
                 .map(line -> {
-                    LocalDateTime parsedDate = LocalDateTime.parse(line.substring(5, 24), formatter);
+                    String parsedLine = line.substring(5, 24);
+                    if (parsedLine.endsWith(",")) {
+                        parsedLine = line.substring(5, 23);
+                    }
+                    LocalDateTime parsedDate = LocalDateTime.parse(parsedLine, formatter);
                     ResultLogs resultLogs = new ResultLogs();
 
                     for (SignificantDateInterval interval : dateInterval) {

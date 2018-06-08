@@ -46,16 +46,8 @@ public class SearchInfoValidator {
     }
 
     private SearchInfoResult getSearchInfoResult(List<SignificantDateInterval> intervals) {
-        if (intervals.isEmpty()) {
-            intervals.add(new SignificantDateInterval(LocalDateTime.MIN, LocalDateTime.MAX));
-        }
+        fillIntervals(intervals);
         for (SignificantDateInterval interval : intervals) {
-            if (interval.getDateFrom() == null) {
-                interval.setDateFrom(LocalDateTime.MIN);
-            }
-            if (interval.getDateTo() == null) {
-                interval.setDateTo(LocalDateTime.MAX);
-            }
             try {
                 LocalDateTime.parse(interval.getDateFrom().toString());
                 LocalDateTime.parse(interval.getDateTo().toString());
@@ -72,5 +64,19 @@ public class SearchInfoValidator {
             }
         }
         return null;
+    }
+
+    static void fillIntervals(List<SignificantDateInterval> intervals) {
+        if (intervals.isEmpty()) {
+            intervals.add(new SignificantDateInterval(LocalDateTime.MIN, LocalDateTime.MAX));
+        }
+        for (SignificantDateInterval interval : intervals) {
+            if (interval.getDateFrom() == null) {
+                interval.setDateFrom(LocalDateTime.MIN);
+            }
+            if (interval.getDateTo() == null) {
+                interval.setDateTo(LocalDateTime.MAX);
+            }
+        }
     }
 }

@@ -42,16 +42,8 @@ public class WebSearchInfoValidator implements Validator {
     }
 
     private void checkDateIntervals(Errors errors, List<SignificantDateInterval> intervals) {
-        if (intervals.isEmpty()) {
-            intervals.add(new SignificantDateInterval(LocalDateTime.MIN, LocalDateTime.MAX));
-        }
+        SearchInfoValidator.fillIntervals(intervals);
         for (SignificantDateInterval interval : intervals) {
-            if (interval.getDateFrom() == null) {
-                interval.setDateFrom(LocalDateTime.MIN);
-            }
-            if (interval.getDateTo() == null) {
-                interval.setDateTo(LocalDateTime.MAX);
-            }
             try {
                 LocalDateTime.parse(interval.getDateFrom().toString());
                 LocalDateTime.parse(interval.getDateTo().toString());
