@@ -2,133 +2,69 @@ package com.example.logsearch.utils.validators;
 
 import com.example.logsearch.entities.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.logsearch.entities.CorrectionCheckResult.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class SearchInfoValidatorTest {
 
-    private SearchInfoValidator validator = new SearchInfoValidator();
-
-    private SearchInfo searchInfo = new SearchInfo();
-
+    private SearchInfo searchInfo;
+    private List<SignificantDateInterval> intervals;
     private SearchInfoResult expected;
 
+    private SearchInfoValidator validator;
+
     @Before
-    public void init() {
-        searchInfo.setRegularExpression("");
-        searchInfo.setFileExtension(FileExtension.DOC);
-        searchInfo.setLocation("");
-        searchInfo.setRealization(false);
-        List<SignificantDateInterval> intervals = new ArrayList<>();
-        intervals.add(new SignificantDateInterval());
-        searchInfo.setDateIntervals(intervals);
+    public void setUp() {
+        searchInfo = mock(SearchInfo.class);
+        intervals = new ArrayList<>();
+        validator = new SearchInfoValidator();
     }
 
     @Test
-    public void allPassedTest() {
-        assertNull(validator.validate(searchInfo));
-    }
+    public void realizationWithoutExtensionTest() {
 
-    @Test
-    public void regexTest() {
-        searchInfo.setRegularExpression(null);
-
-        expected = new SearchInfoResult(ERROR37.getErrorCode(), ERROR37.getErrorMessage());
-        SearchInfoResult actual = validator.validate(searchInfo);
-        assertEquals(expected.getErrorCode(), actual.getErrorCode());
-        assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
-    }
-
-    @Test
-    public void fileExtensionWithoutRealizationTest() {
-        searchInfo.setRealization(false);
-        assertNull(validator.validate(searchInfo));
-
-        searchInfo.setFileExtension(null);
-        assertNull(validator.validate(searchInfo));
-    }
-
-    @Test
-    public void fileExtensionWithRealizationTest() {
-        searchInfo.setRealization(true);
-
-        searchInfo.setFileExtension(FileExtension.DOC);
-        assertNull(validator.validate(searchInfo));
-
-        searchInfo.setFileExtension(null);
         expected = new SearchInfoResult(ERROR3701.getErrorCode(), ERROR3701.getErrorMessage());
-        SearchInfoResult actual = validator.validate(searchInfo);
-        assertEquals(expected.getErrorCode(), actual.getErrorCode());
-        assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
+
+        when(searchInfo.isRealization()).thenReturn(true);
+        when(searchInfo.getFileExtension()).thenReturn(null);
+
+        assertTrue(searchInfo.isRealization());
+        assertNull(searchInfo.getFileExtension());
+        assertEquals(expected, validator.validate(searchInfo));
     }
 
     @Test
-    public void locationTest() {
-        String existsPath = Paths.get(System.getProperty("user.dir")).getParent().getFileName().toString();
-        String notExistsPath = "notExists";
+    public void noRealizationTest() {
 
-        searchInfo.setLocation(existsPath);
-        assertNull(validator.validate(searchInfo));
+        when(searchInfo.isRealization()).thenReturn(false);
+        when(searchInfo.getFileExtension()).thenReturn(FileExtension.DOC);
 
-        searchInfo.setLocation("\\" + existsPath);
-        assertNull(validator.validate(searchInfo));
-
-        searchInfo.setLocation("/" + existsPath);
-        assertNull(validator.validate(searchInfo));
-
-        searchInfo.setLocation(notExistsPath);
-        expected = new SearchInfoResult(ERROR44.getErrorCode(), ERROR44.getErrorMessage());
-        SearchInfoResult actual = validator.validate(searchInfo);
-        assertEquals(expected.getErrorCode(), actual.getErrorCode());
-        assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
-
-        searchInfo.setLocation(null);
-        assertNull(validator.validate(searchInfo));
+        assertFalse(searchInfo.isRealization());
+        assertEquals(FileExtension.DOC, searchInfo.getFileExtension());
     }
 
     @Test
-    public void nullDateIntervalTest() {
-        searchInfo.setDateIntervals(null);
+    public void nullLocationTest() {
 
-        expected = new SearchInfoResult(ERROR37.getErrorCode(), ERROR37.getErrorMessage());
-        SearchInfoResult actual = validator.validate(searchInfo);
-        assertEquals(expected.getErrorCode(), actual.getErrorCode());
-        assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
     }
 
     @Test
-    public void exceedsPresentTimeTest() {
-        List<SignificantDateInterval> intervals = new ArrayList<>();
-        SignificantDateInterval interval = new SignificantDateInterval();
-        interval.setDateFrom(LocalDateTime.MAX);
-        intervals.add(interval);
-        searchInfo.setDateIntervals(intervals);
+    public void fillIntervalsTest() {
+        assertTrue(intervals.isEmpty());
 
-        expected = new SearchInfoResult(ERROR18.getErrorCode(), ERROR18.getErrorMessage());
-        SearchInfoResult actual = validator.validate(searchInfo);
-        assertEquals(expected.getErrorCode(), actual.getErrorCode());
-        assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
-    }
+        intervals.add(new SignificantDateInterval());
+        assertNull(intervals.get(0).getDateFrom());
+        assertNull(intervals.get(0).getDateTo());
 
-    @Test
-    public void exceedsDateTo() {
-        List<SignificantDateInterval> intervals = new ArrayList<>();
-        SignificantDateInterval interval = new SignificantDateInterval();
-        interval.setDateFrom(LocalDateTime.parse("2018-05-09T10:15:30"));
-        interval.setDateTo(LocalDateTime.parse("2018-01-09T10:15:30"));
-        intervals.add(interval);
-        searchInfo.setDateIntervals(intervals);
-
-        expected = new SearchInfoResult(ERROR1.getErrorCode(), ERROR1.getErrorMessage());
-        SearchInfoResult actual = validator.validate(searchInfo);
-        assertEquals(expected.getErrorCode(), actual.getErrorCode());
-        assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
+        SearchInfoValidator.fillIntervals(intervals);
+        assertEquals(LocalDateTime.MIN, intervals.get(0).getDateFrom());
+        assertEquals(LocalDateTime.MAX, intervals.get(0).getDateTo());
     }
 }

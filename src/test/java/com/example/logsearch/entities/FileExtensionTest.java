@@ -8,7 +8,7 @@ public class FileExtensionTest {
 
     @Test
     public void value() {
-        assertEquals(FileExtension.DOC, FileExtension.valueOf("DOC"));
-        assertNotEquals(FileExtension.PDF, FileExtension.valueOf("DOC"));
+        assertEquals("DOC", FileExtension.DOC.value());
+        assertNotEquals("PDF", FileExtension.DOC.value());
     }
 }
