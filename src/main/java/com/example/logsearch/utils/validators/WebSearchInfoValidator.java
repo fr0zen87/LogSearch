@@ -2,6 +2,7 @@ package com.example.logsearch.utils.validators;
 
 import com.example.logsearch.entities.SearchInfo;
 import com.example.logsearch.entities.SignificantDateInterval;
+import com.example.logsearch.utils.ConfigProperties;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -27,15 +28,15 @@ public class WebSearchInfoValidator implements Validator {
             errors.rejectValue("fileExtension", ERROR3701.getErrorMessage());
         }
 
-        Path domainPath = Paths.get(System.getProperty("user.dir"));
-        while (!domainPath.endsWith("domains")) {
-            domainPath = domainPath.getParent();
-        }
-        Path path = Paths.get(String.valueOf(domainPath), searchInfo.getLocation());
-        if (!path.toFile().exists()) {
-            errors.rejectValue("location", ERROR44.getErrorMessage());
+        Path domainPath = ConfigProperties.getDomainPath();
+        if (searchInfo.getLocation() == null) {
+            searchInfo.setLocation(String.valueOf(domainPath));
         } else {
-            searchInfo.setLocation(String.valueOf(path));
+            Path locationPath = Paths.get(String.valueOf(domainPath), searchInfo.getLocation());
+            if (!locationPath.toFile().exists()) {
+                errors.rejectValue("location", ERROR44.getErrorMessage());
+            }
+            searchInfo.setLocation(String.valueOf(locationPath));
         }
 
         if (searchInfo.getRegularExpression() == null || searchInfo.getDateIntervals() == null) {

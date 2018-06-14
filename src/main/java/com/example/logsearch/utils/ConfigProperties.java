@@ -8,6 +8,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @Configuration
 @ConfigurationProperties(prefix = "logs")
 @PropertySource("classpath:props.properties")
@@ -15,6 +18,23 @@ import org.springframework.context.annotation.PropertySource;
 @Getter
 @Setter
 public class ConfigProperties {
+
+    private static Path domainPath;
+
+    static {
+        domainPath = Paths.get(System.getProperty("user.dir"));
+        while (!domainPath.endsWith("domains")) {
+            if (domainPath.getParent() == null) {
+                domainPath = Paths.get("");
+                break;
+            }
+            domainPath = domainPath.getParent();
+        }
+    }
+
+    public static Path getDomainPath() {
+        return domainPath;
+    }
 
     @Value("${logs.path}")
     private String path;

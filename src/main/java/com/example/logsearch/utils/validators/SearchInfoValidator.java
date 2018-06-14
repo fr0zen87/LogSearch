@@ -1,6 +1,7 @@
 package com.example.logsearch.utils.validators;
 
 import com.example.logsearch.entities.*;
+import com.example.logsearch.utils.ConfigProperties;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -33,10 +34,7 @@ public class SearchInfoValidator {
     }
 
     private SearchInfoResult check44Error(SearchInfo searchInfo) {
-        Path domainPath = Paths.get(System.getProperty("user.dir"));
-        while (!domainPath.endsWith("domains")) {
-            domainPath = domainPath.getParent();
-        }
+        Path domainPath = ConfigProperties.getDomainPath();
         if (searchInfo.getLocation() == null) {
             searchInfo.setLocation(String.valueOf(domainPath));
         } else {
