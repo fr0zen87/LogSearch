@@ -27,10 +27,15 @@ public class WebSearchInfoValidator implements Validator {
             errors.rejectValue("fileExtension", ERROR3701.getErrorMessage());
         }
 
-        Path defaultPath = Paths.get(System.getProperty("user.dir")).getParent().getParent();
-        Path path = Paths.get(defaultPath.toString(), searchInfo.getLocation());
+        Path domainPath = Paths.get(System.getProperty("user.dir"));
+        while (!domainPath.endsWith("domains")) {
+            domainPath = domainPath.getParent();
+        }
+        Path path = Paths.get(String.valueOf(domainPath), searchInfo.getLocation());
         if (!path.toFile().exists()) {
             errors.rejectValue("location", ERROR44.getErrorMessage());
+        } else {
+            searchInfo.setLocation(String.valueOf(path));
         }
 
         if (searchInfo.getRegularExpression() == null || searchInfo.getDateIntervals() == null) {

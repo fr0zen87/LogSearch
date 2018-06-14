@@ -3,7 +3,7 @@
 <head>
     <div th:fragment="footer-head">
         <!-- Custom styles for this template -->
-        <link href="/static/sticky-footer.css" rel="stylesheet">
+        <link th:href="@{../static/sticky-footer.css}" rel="stylesheet">
     </div>
 </head>
 <body>
@@ -15,8 +15,8 @@
                 APZ. All rights reserved.
             </p>
         </div>
-        <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
-        <script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
     </footer>
 </div>
 </body>

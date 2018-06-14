@@ -6,16 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.util.Locale;
 
-@EnableWebMvc
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
@@ -32,7 +29,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public ResourceBundleMessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("templates/logSearch");
+        messageSource.setBasename("i18n/messages");
+        messageSource.setDefaultEncoding("windows-1251");
         return messageSource;
     }
 
@@ -54,15 +52,4 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
     }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/webjars/**",
-                "/images/**",
-                "/static/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/",
-                        "classpath:/images/",
-                        "classpath:/static/");
-    }
-
 }

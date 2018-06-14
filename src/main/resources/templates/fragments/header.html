@@ -10,7 +10,7 @@
         <meta name="author" content="APZ">
 
         <!-- Bootstrap core CSS -->
-        <link href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+        <link th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -21,7 +21,6 @@
         <title th:text="#{title}">Log Search</title>
     </div>
 </head>
-<body style="background-image: url(images/back.png)">
 
 <div th:fragment="header">
     <!-- Fixed navbar -->

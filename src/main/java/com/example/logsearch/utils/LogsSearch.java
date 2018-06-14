@@ -80,6 +80,7 @@ public class LogsSearch {
                                                List<SignificantDateInterval> dateInterval) {
         return fileLines.stream()
                 .parallel()
+                .filter(line -> line.startsWith("####"))
                 .filter(Pattern.compile(searchInfo.getRegularExpression()).asPredicate())
                 .map(line -> {
                     String parsedLine = line.substring(5, 24);

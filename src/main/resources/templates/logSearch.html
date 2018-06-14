@@ -6,7 +6,7 @@
     <div th:replace="fragments/footer :: footer-head"></div>
 
 </head>
-<body style="background-image: url(images/back.png)">
+<body style="background-image: url(../images/back.png)">
 
 <div th:replace="fragments/header :: header"></div>
 
@@ -18,8 +18,7 @@
     </div>
 
     <div>
-        <form class="needs-validation" novalidate action="#" th:action="@{/logSearch}" th:object="${searchInfo}"
-              method="post">
+        <form action="#" th:action="@{/logSearch}" th:object="${searchInfo}" method="post">
 
             <h3><label class="label label-primary" th:text="#{regex}">Введите регулярное выражение</label></h3>
             <input type="text" th:field="*{regularExpression}"><br>
