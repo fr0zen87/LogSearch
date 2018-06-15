@@ -97,7 +97,8 @@ public class FileSearch {
                     long currentIntervalDifference = Duration.between(currentInterval.getDateTo(), currentInterval.getDateFrom()).toMinutes();
                     long fileIntervalDifference = Duration.between(fileInterval.getDateTo(), fileInterval.getDateFrom()).toMinutes();
 
-                    if (fileIntervalDifference / currentIntervalDifference <= 1.1) {
+                    double diff = fileIntervalDifference / (double)currentIntervalDifference;
+                    if (diff <= 1.1) {
                         count++;
                         break;
                     }

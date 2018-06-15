@@ -1,0 +1,7 @@
+####<08.03.2018 16:54:22,051 MSK> <Info> <Security> <sb-vpnclient8> <> <main> <> <> <> <1525787671051> <[severity-value: 64] [partition-id: 0] [partition-name: DOMAIN] > <BEA-090905> <Disabling the CryptoJ JCE Provider self-integrity check for better startup performance. To enable this check, specify -Dweblogic.security.allowCryptoJDefaultJCEVerification=true.> 
+####<08.03.2018 16:54:31,232 MSK> <Info> <Security> <sb-vpnclient8> <> <main> <> <> <> <1525787671232> <[severity-value: 64] [partition-id: 0] [partition-name: DOMAIN] > <BEA-090906> <Changing the default Random Number Generator in RSA CryptoJ from ECDRBG128 to HMACDRBG. To disable this change, specify -Dweblogic.security.allowCryptoJDefaultPRNG=true.> 
+####<04.05.2018 15:09:19,764 MSK> <Info> <Management> <sb-vpnclient8> <> <[STANDBY] ExecuteThread: '3' for queue: 'weblogic.kernel.Default (self-tuning)'> <> <> <> <1525435759764> <[severity-value: 64] [partition-id: 0] [partition-name: DOMAIN] > <BEA-141187> <Java system properties are defined as follows: 
+awt.toolkit = sun.awt.windows.WToolkit
+weblogic.home = C:\Oracle\MIDDLE~1\ORACLE~1\wlserver\server
+wls.home = C:\Oracle\MIDDLE~1\ORACLE~1\wlserver\server
+.> 
