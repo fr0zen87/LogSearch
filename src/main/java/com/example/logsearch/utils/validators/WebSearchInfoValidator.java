@@ -25,7 +25,7 @@ public class WebSearchInfoValidator implements Validator {
     public void validate(Object target, Errors errors) {
         SearchInfo searchInfo = (SearchInfo) target;
         if (searchInfo.isRealization() && searchInfo.getFileExtension() == null) {
-            errors.rejectValue("fileExtension", ERROR3701.getErrorMessage());
+            errors.rejectValue("fileExtension", String.valueOf(ERROR3701.getErrorCode()), ERROR3701.getErrorMessage());
         }
 
         Path domainPath = ConfigProperties.getDomainPath();
@@ -34,13 +34,13 @@ public class WebSearchInfoValidator implements Validator {
         } else {
             Path locationPath = Paths.get(String.valueOf(domainPath), searchInfo.getLocation());
             if (!locationPath.toFile().exists()) {
-                errors.rejectValue("location", ERROR44.getErrorMessage());
+                errors.rejectValue("location", String.valueOf(ERROR44.getErrorCode()), ERROR44.getErrorMessage());
             }
             searchInfo.setLocation(String.valueOf(locationPath));
         }
 
         if (searchInfo.getRegularExpression() == null || searchInfo.getDateIntervals() == null) {
-            errors.rejectValue("regularExpression", ERROR37.getErrorMessage());
+            errors.rejectValue("regularExpression", String.valueOf(ERROR37.getErrorCode()), ERROR37.getErrorMessage());
         }
 
         List<SignificantDateInterval> intervals = searchInfo.getDateIntervals();
@@ -54,15 +54,15 @@ public class WebSearchInfoValidator implements Validator {
                 LocalDateTime.parse(interval.getDateFrom().toString());
                 LocalDateTime.parse(interval.getDateTo().toString());
             } catch (DateTimeParseException e) {
-                errors.rejectValue("dateFormat", ERROR19.getErrorMessage());
+                errors.rejectValue("intervals", String.valueOf(ERROR19.getErrorCode()), ERROR19.getErrorMessage());
             }
 
             if (interval.getDateFrom().isAfter(LocalDateTime.now())) {
-                errors.rejectValue("exceedsPresentTime", ERROR18.getErrorMessage());
+                errors.rejectValue("dateFrom", String.valueOf(ERROR18.getErrorCode()), ERROR18.getErrorMessage());
             }
 
             if (interval.getDateFrom().isAfter(interval.getDateTo())) {
-                errors.rejectValue("exceedsDateTo", ERROR1.getErrorMessage());
+                errors.rejectValue("dateTo", String.valueOf(ERROR1.getErrorCode()), ERROR1.getErrorMessage());
             }
         }
     }

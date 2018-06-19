@@ -53,6 +53,8 @@ public class WebLogSearchController {
         SearchInfo searchInfo = new SearchInfo();
         searchInfo.getDateIntervals().add(new SignificantDateInterval());
         model.addAttribute(searchInfo);
+        String path = ConfigProperties.getDomainPath().toString();
+        model.addAttribute("path", path);
         return LOG_SEARCH;
     }
 

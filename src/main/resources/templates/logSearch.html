@@ -5,6 +5,8 @@
     <div th:replace="fragments/header :: header-head"></div>
     <div th:replace="fragments/footer :: footer-head"></div>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+
 </head>
 <body style="background-image: url(../images/back.png)">
 
@@ -20,20 +22,24 @@
     <div>
         <form action="#" th:action="@{/logSearch}" th:object="${searchInfo}" method="post">
 
-            <h3><label class="label label-primary" th:text="#{regex}">Введите регулярное выражение</label></h3>
-            <input type="text" th:field="*{regularExpression}"><br>
+            <div class="form-group">
+                <h3><label for="regex" class="label label-primary" th:text="#{regex}">Введите регулярное выражение</label></h3>
+                <div class="input-group col-xs-4">
+                    <span class="input-group-addon" id="basic-addon1">regex:</span>
+                    <input id="regex" class="form-control" type="text" th:field="*{regularExpression}">
+                </div>
+            </div>
 
             <div class=".col-md-6">
-                <h3><label class="label label-primary" th:text="#{intervals}">Выберите временные промежутки</label>
-                </h3>
-                <table class="table table-bordered">
+                <h3><label class="label label-primary" th:text="#{intervals}">Выберите временные промежутки</label></h3>
+                <table class="table table-bordered table-striped table-hover">
                     <thead>
                     <tr class="row">
                         <th th:if="*{!dateIntervals.isEmpty()}">#</th>
-                        <th th:text="#{from}" th:if="*{!dateIntervals.isEmpty()}">Variety</th>
-                        <th th:text="#{to}" th:if="*{!dateIntervals.isEmpty()}">Seeds per cell</th>
+                        <th th:text="#{from}" th:if="*{!dateIntervals.isEmpty()}">from</th>
+                        <th th:text="#{to}" th:if="*{!dateIntervals.isEmpty()}">to</th>
                         <th>
-                            <button type="submit" name="addRow" th:text="#{addRow}">Add row</button>
+                            <button type="submit" name="addRow" class="btn btn-default" th:text="#{addRow}">Add row</button>
                         </th>
                     </tr>
                     </thead>
@@ -41,15 +47,13 @@
                     <tr th:each="row, rowStat : *{dateIntervals}" class="row">
                         <td th:text="${rowStat.count}">1</td>
                         <td>
-                            <input type="datetime-local" th:field="*{dateIntervals[__${rowStat.index}__].dateFrom}"
-                                   th:errorclass="fieldError"/>
+                            <input type="datetime-local" class="form-control" th:field="*{dateIntervals[__${rowStat.index}__].dateFrom}"/>
                         </td>
                         <td>
-                            <input type="datetime-local" th:field="*{dateIntervals[__${rowStat.index}__].dateTo}"
-                                   th:errorclass="fieldError"/>
+                            <input type="datetime-local" class="form-control" th:field="*{dateIntervals[__${rowStat.index}__].dateTo}"/>
                         </td>
                         <td>
-                            <button type="submit" name="removeRow" th:value="${rowStat.index}"
+                            <button type="submit" name="removeRow" class="btn btn-default" th:value="${rowStat.index}"
                                     th:text="#{removeRow}">
                                 Remove row
                             </button>
@@ -59,24 +63,42 @@
                 </table>
             </div>
 
-            <h3><label class="label label-primary" th:text="#{location}">Введите расположение логов</label></h3>
-            <input type="text" th:field="*{location}"><br>
+            <div class="form-group" th:classappend="${#fields.hasErrors('location')} ? has-error : ''">
+                <h3><label for="location" class="label label-primary" th:text="#{location}">Введите расположение логов</label></h3>
+                <div class="input-group">
+                    <span class="input-group-addon" th:text="${path}">@</span>
+                    <input id="location" type="text" class="form-control" th:field="*{location}">
+                </div>
+                <span th:if="${#fields.hasErrors('location')}" class="help-block" th:errors="*{location}"></span>
+            </div>
 
-            <h3><label class="label label-primary" th:text="#{realization}">Сохранить результат в файл?</label></h3>
-            <input type="radio" th:field="*{realization}" th:value="true" th:text="#{yes}"><br>
-            <input type="radio" th:field="*{realization}" th:value="false" th:text="#{no}"><br>
+            <div>
+                <h3><label class="label label-primary" th:text="#{realization}">Сохранить результат в файл?</label></h3>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input type="radio" th:field="*{realization}" th:value="true" th:text="#{yes}">
+                    </label>
+                    <label class="btn btn-default active">
+                        <input type="radio" th:field="*{realization}" th:value="false" th:text="#{no}">
+                    </label>
+                </div>
+            </div>
 
-            <h3><label class="label label-primary" th:text="#{extension}">Выберите расширение запрошенного
-                файла</label>
-            </h3>
-            <select th:field="*{fileExtension}">
-                <option th:each="fileExtension : ${allExtensions}"
-                        th:value="${fileExtension}"
-                        th:text="#{${'searchInfo.' + fileExtension}}">
-                </option>
-            </select><br>
+            <div>
+                <h3><label class="label label-primary" th:text="#{extension}">Выберите расширение запрошенного
+                    файла</label>
+                </h3>
+                <select class="form-control-static" th:field="*{fileExtension}">
+                    <option th:each="fileExtension : ${allExtensions}"
+                            th:value="${fileExtension}"
+                            th:text="#{${'searchInfo.' + fileExtension}}">
+                    </option>
+                </select>
+            </div>
 
-            <button style="margin: 10px" type="submit" class="btn btn-lg btn-success">Search</button>
+            <div>
+                <button style="margin: 15px" type="submit" class="btn btn-lg btn-success">Search</button>
+            </div>
         </form>
     </div>
 </div>
