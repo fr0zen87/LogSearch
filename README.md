@@ -18,7 +18,7 @@ Note: запущенное на сервере приложений Weblogic п�
 			"dateTo":"2018-04-01T00:00:00"
 		}
 	],
-	"location":"C:\\Users\\User\\IdeaProjects\\domains\\logs",
+	"location":"C:\\Users\\User\\domains\\logs",
 	"realization":"true",
 	"fileExtension":"DOC"
 }
@@ -41,7 +41,7 @@ Note: запущенное на сервере приложений Weblogic п�
                 	<ls:dateFrom>2018-03-09T10:15:30</ls:dateFrom>
                 	<ls:dateTo>2018-04-10T10:15:30</ls:dateTo>
             </ls:dateIntervals>
-            <ls:location>C:\\Users\\APZhukov\\IdeaProjects\\domains</ls:location>
+            <ls:location>C:\\Users\\User\\domains</ls:location>
             <ls:realization>true</ls:realization>
             <ls:fileExtension>RTF</ls:fileExtension>
         </ls:searchInfo>
